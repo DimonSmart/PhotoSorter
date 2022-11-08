@@ -4,6 +4,6 @@ namespace PhotoSorterEngine
 {
     public interface IRenamer
     {
-        Maybe<string> Rename(string sourceFileName, DateTime dateTime, string destinationFolder, string pattern);
+        string Rename(string sourceFileName, DateTime dateTime, string destinationFolder, string pattern);
     }
 }

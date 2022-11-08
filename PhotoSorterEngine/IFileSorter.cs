@@ -2,6 +2,6 @@
 {
     public interface IFileSorter
     {
-        Dictionary<string, string> CalculateSorting(SortParameters sortParameters);
+        SortingCalculationDescription CalculateSorting(SourceFiles sourceFiles, SortParameters sortParameters);
     }
 }

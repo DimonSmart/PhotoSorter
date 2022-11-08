@@ -5,14 +5,11 @@ namespace PhotoSorterEngine
 {
     public class Renamer : IRenamer
     {
-        private readonly IFileCreationDatetimeExtractor _fileCreationDatetimeExtractor;
-
-        public Renamer(IFileCreationDatetimeExtractor fileCreationDatetimeExtractor)
+        public Renamer()
         {
-            _fileCreationDatetimeExtractor = fileCreationDatetimeExtractor;
         }
 
-        public Maybe<string> Rename(string sourceFileName, DateTime dateTime, string destinationFolder, string pattern)
+        public string Rename(string sourceFileName, DateTime dateTime, string destinationFolder, string pattern)
         {
             //  var dateTime = _fileCreationDatetimeExtractor.Extract(sourceFileName);
             // if (!dateTime.HasValue) return Maybe<string>.Nothing;
@@ -37,7 +34,7 @@ namespace PhotoSorterEngine
 
             var fileName = Path.GetFileName(sourceFileName);
             var fullResultPath = Path.Combine(destinationFolder, pattern, fileName);
-            return fullResultPath.ToMaybe();
+            return fullResultPath;
         }
     }
 }

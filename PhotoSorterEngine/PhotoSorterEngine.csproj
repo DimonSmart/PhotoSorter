@@ -7,8 +7,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FFMediaToolkit" Version="4.4.1" />
     <PackageReference Include="Functional.Maybe" Version="2.0.20" />
     <PackageReference Include="MetadataExtractor" Version="2.7.2" />
+    <PackageReference Include="ResultMonad" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FFmpeg\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="FFmpeg\avcodec-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FFmpeg\avformat-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FFmpeg\avutil-57.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FFmpeg\swresample-4.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FFmpeg\swscale-6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

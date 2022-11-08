@@ -1,10 +1,10 @@
 ﻿using Functional.Maybe;
+using ResultMonad;
 
 namespace PhotoSorterEngine
 {
     public interface IFileCreationDatetimeExtractor
     {
-        Maybe<DateTime> Extract(string fileName);
-        Maybe<DateTime> Extract(Stream fileStream);
+        Result<DateTime, Exception> Extract(string fileName, bool UseFileCreationDateIfNoExif);
     }
 }

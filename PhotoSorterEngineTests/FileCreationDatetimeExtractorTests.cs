@@ -24,8 +24,9 @@ namespace PhotoSorterEngineTests
         public void ExtractFileDateOkTest(string sourceFileName, string datetime)
         {
             var expectedDateTime = DateTime.Parse(datetime, null, DateTimeStyles.RoundtripKind);
-            using var stream = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-            _fileCreationDatetimeExtractor.Extract(stream).Value.Should().Be(expectedDateTime);
+            var result = _fileCreationDatetimeExtractor.Extract(sourceFileName, false);
+            result.IsSuccess.Should().Be(true);
+            result.Value.Should().Be(expectedDateTime);
         }
     }
 }

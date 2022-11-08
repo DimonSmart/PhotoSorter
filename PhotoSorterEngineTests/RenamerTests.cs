@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 
 namespace PhotoSorterEngineTests
 {
+
     public class RenamerTests : TestsBase
     {
         private IRenamer _renamer;
@@ -26,7 +27,7 @@ namespace PhotoSorterEngineTests
         public void RenameOkTest(string sourceFileName, string namePattern, string expectedFileName)
         {
             var result = _renamer.Rename(sourceFileName, _dateTime, @"X:\TestData\Photos", namePattern);
-            result.Value.Should().BeEquivalentTo(expectedFileName);
+            result.Should().BeEquivalentTo(expectedFileName);
         }
     }
 }

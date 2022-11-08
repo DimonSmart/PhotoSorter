@@ -1,43 +1,103 @@
-﻿using Functional.Maybe;
+﻿using FFMediaToolkit;
+using FFMediaToolkit.Decoding;
 using MetadataExtractor;
+using MetadataExtractor.Formats.Avi;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.QuickTime;
+using ResultMonad;
+using System;
 
 namespace PhotoSorterEngine
 {
     public class FileCreationDatetimeExtractor : IFileCreationDatetimeExtractor
     {
+        static FileCreationDatetimeExtractor()
+        {
+            FFmpegLoader.FFmpegPath = @"./FFmpeg";
+        }
+
+
         private static List<(string dictionary, string tag, int id)> dateTimeTags = new()
         {
                 new ("Exif IFD0", "Date/Time", ExifDirectoryBase.TagDateTime),
                 new ("SubIFD", "Date/Time Original", ExifDirectoryBase.TagDateTimeOriginal),
                 new ("QuickTime Movie Header", "Created", QuickTimeMetadataHeaderDirectory.TagCreationDate),
-                new ("IPTC", "Date Created", IptcDirectory.TagDateCreated)};
-        /*
-Exif IFD0 - Date/Time
-Exif SubIFD - Date/Time Original
-Exif SubIFD - Date/Time Digitized
-ICC Profile - Profile Date/Time
-IPTC - Date Created
-File - File Modified Date
-GPS - GPS Date Stamp
-QuickTime Movie Header - Created
-QuickTime Movie Header - Modified
-QuickTime Track Header - Created
-QuickTime Track Header - Modified
-*/
-        public Maybe<DateTime> Extract(string fileName)
+                new ("IPTC", "Date Created", IptcDirectory.TagDateCreated),
+                new ("AVI", "Date/Time Original", AviDirectory.TagDateTimeOriginal)};
+
+        public Result<DateTime, Exception> Extract(string fileName, bool useFileCreationDateIfNoExif)
         {
-            return Extract(ImageMetadataReader.ReadMetadata(fileName));
+            var extension = Path.GetExtension(fileName);
+            if (MediaTypeExtensions.IsVideo(extension))
+            {
+                return ExtractVideoCreationDateTime(fileName, useFileCreationDateIfNoExif);
+            }
+
+            return ExtractPhotoCreationDateTime(fileName, useFileCreationDateIfNoExif);
         }
 
-        public Maybe<DateTime> Extract(Stream fileStream)
+        private static Result<DateTime, Exception> ExtractPhotoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
         {
-            return Extract(ImageMetadataReader.ReadMetadata(fileStream));
+            try
+            {
+                var result = Extract(ImageMetadataReader.ReadMetadata(fileName));
+                if (result.IsSuccess)
+                {
+                    return result;
+                }
+            }
+            catch (Exception exception)
+            {
+                if (!useFileCreationDateIfNoExif)
+                {
+                    return Result.Fail<DateTime, Exception>(exception);
+                }
+            }
+
+            return ExtractCreationDateFallback(fileName, useFileCreationDateIfNoExif);
         }
 
-        private static Maybe<DateTime> Extract(IReadOnlyList<MetadataExtractor.Directory> directories)
+        private static Result<DateTime, Exception> ExtractVideoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
+        {
+            try
+            {
+                var fileinfo = MediaFile.Open(fileName);
+                if (fileinfo.Info.Metadata.Metadata.TryGetValue("creation_time", out var creationTimeAsString) && DateTime.TryParse(creationTimeAsString, out var creationTime))
+                {
+                    return Result.Ok<DateTime, Exception>(creationTime);
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return ExtractCreationDateFallback(fileName, useFileCreationDateIfNoExif);
+        }
+
+        private static Result<DateTime, Exception> ExtractCreationDateFallback(string fileName, bool useFileCreationDateIfNoExif)
+        {
+            if (!useFileCreationDateIfNoExif)
+            {
+                return Result.Fail<DateTime, Exception>(new Exception("Cant extract creation date"));
+            }
+            return ExtractFileCreationDate(fileName);
+        }
+
+        private static Result<DateTime, Exception> ExtractFileCreationDate(string fileName)
+        {
+            try
+            {
+                return Result.Ok<DateTime, Exception>(File.GetCreationTime(fileName));
+
+            }
+            catch (Exception getFileCreationTimeException)
+            {
+                return Result.Fail<DateTime, Exception>(getFileCreationTimeException);
+            }
+        }
+
+        private static Result<DateTime, Exception> Extract(IReadOnlyList<MetadataExtractor.Directory> directories)
         {
             foreach (var dateTimeTag in dateTimeTags)
             {
@@ -47,14 +107,15 @@ QuickTime Track Header - Modified
                 {
                     if (dictionary.TryGetDateTime(dateTimeTag.id, out var dateTime))
                     {
-                        return dateTime.ToMaybe();
+                        return Result.Ok<DateTime, Exception>(dateTime);
                     }
                 }
                 catch (Exception)
                 {
                 }
             }
-            return Maybe<DateTime>.Nothing;
+
+            return Result.Fail<DateTime, Exception>(new Exception("Cant extract creation date"));
         }
     }
 }

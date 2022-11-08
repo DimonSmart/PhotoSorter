@@ -1,40 +1,86 @@
-﻿using MetadataExtractor;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PhotoSorterEngine
 {
+
     public class FileSorter : IFileSorter
     {
-        public Dictionary<string, string> CalculateSorting(SortParameters sortParameters)
+        private readonly IRenamer _renamer;
+        private readonly IFileCreationDatetimeExtractor _fileCreationDatetimeExtractor;
+
+        public FileSorter(IRenamer renamer, IFileCreationDatetimeExtractor fileCreationDatetimeExtractor)
         {
-            var sourceFiles = System.IO.Directory.GetFiles(sortParameters.SourceFolder, sortParameters.SearchPattern, SearchOption.AllDirectories).ToList();
+            _renamer = renamer;
+            _fileCreationDatetimeExtractor = fileCreationDatetimeExtractor;
+        }
 
-            var operations = new Dictionary<string, string>();
-
-            foreach (var file in sourceFiles)
+        public SortingCalculationDescription CalculateSorting(SourceFiles sourceFiles, SortParameters sortParameters)
+        {
+            var operations = new List<FileMoveDescription>();
+            var errors = new List<FileMoveError>();
+            foreach (var file in sourceFiles.files)
             {
-                var destination = CalculateDestinationPath(sortParameters, file);
+                var dateTime = _fileCreationDatetimeExtractor.Extract(file, sortParameters.UseFileCreationDateIfNoExif);
+                if (dateTime.IsSuccess)
+                {
+
+                    if (IsAlreadyInPlace(file, dateTime.Value, sortParameters.DestinationFolder, sortParameters.NamePattern, true, out var actualLocation))
+                    {
+                        operations.Add(new FileMoveDescription(file, actualLocation, true, "On the spot"));
+                        continue;
+                    }
+
+                    var newFileName = _renamer.Rename(file, dateTime.Value, sortParameters.DestinationFolder, sortParameters.NamePattern);
+                    newFileName = RemoveCommentTag(newFileName);
+
+                    // Move needed
+                    operations.Add(new FileMoveDescription(file, newFileName, false, string.Empty));
+                }
+                else
+                {
+                    errors.Add(new FileMoveError(file, dateTime.Error.Message));
+                }
             }
 
-            return operations;
+            return new SortingCalculationDescription(operations, errors);
         }
 
-        string CalculateDestinationPath(SortParameters sortParameters, string fileName)
+        private static string RemoveCommentTag(string path)
         {
-            var newFileName = GetNewFileName(sortParameters, fileName);
-            var destination = Path.Combine(sortParameters.DestinationFolder, newFileName);
-            return destination;
+            return path.Replace("%Comment%", string.Empty);
         }
 
-        private string GetNewFileName(SortParameters sortParameters, string fileName)
+        private bool IsAlreadyInPlace(string file, DateTime dateTime, string destinationFolder, string namePattern, bool oneDayTolerant, out string actualLocation)
         {
-            var directories = ImageMetadataReader.ReadMetadata(fileName);
-            foreach (var directory in directories)
-                foreach (var tag in directory.Tags)
-                    Console.WriteLine($"{directory.Name} - {tag.Name} = {tag.Description}");
+            if (IsAlreadyInPlace(file, dateTime, destinationFolder, namePattern, out actualLocation))
+            {
+                return true;
+            }
 
-            // Possible options
-            // YYYY - FileCreation year as
-            return fileName;
+            if (!oneDayTolerant)
+            {
+                return false;
+            }
+
+            // Do not replace with simple return! Check out variable!  
+            if (IsAlreadyInPlace(file, dateTime.AddDays(1), destinationFolder, namePattern, out actualLocation) ||
+                IsAlreadyInPlace(file, dateTime.AddDays(-1), destinationFolder, namePattern, out actualLocation))
+                return true;
+            else
+                return false;
         }
+
+        private bool IsAlreadyInPlace(string file, DateTime dateTime, string destinationFolder, string namePattern, out string actualLocation)
+        {
+            var newFileName = _renamer.Rename(file, dateTime, destinationFolder, namePattern);
+            var parts = newFileName.Split("%Comment%").Select(s => Regex.Escape(s));
+            var sb = new StringBuilder();
+            var pattern = string.Join(".*", parts);
+            var match = Regex.Match(file, pattern);
+            actualLocation = newFileName;
+            return match.Success;
+        }
+
     }
 }
