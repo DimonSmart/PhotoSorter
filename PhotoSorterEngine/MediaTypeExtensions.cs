@@ -12,7 +12,7 @@
 
         public static readonly ICollection<string> Images = new List<string> { ".jpg", ".jpeg", ".png", ".heic" };
         public static readonly ICollection<string> Video = new List<string> { ".avi", ".mp4" };
-        public static readonly ICollection<string> All = new List<string> { ".jpg", ".jpeg", ".png", ".avi", ".mp4" };
+        public static readonly ICollection<string> All = new List<string> { ".jpg", ".jpeg", ".png", ".heic", ".avi", ".mp4" };
 
         public static ICollection<string> GetFileExtensions(MediaType mediaType)
         {

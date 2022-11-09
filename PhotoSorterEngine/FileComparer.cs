@@ -33,7 +33,7 @@
 
                 Span<byte> bytes1 = buffer1;
                 Span<byte> bytes2 = buffer2;
-                if (bytes1.SequenceEqual(bytes2)) return false;
+                if (!bytes1.SequenceEqual(bytes2)) return false;
             }
         }
     }

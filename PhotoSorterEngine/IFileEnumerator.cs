@@ -4,6 +4,6 @@
 
     public interface IFileEnumerator
     {
-        SourceFiles EnumerateFiles(string baseDirectory, MediaType mediaType);
+        SourceFiles EnumerateFiles(string baseDirectory, MediaType mediaType, int take = 0);
     }
 }

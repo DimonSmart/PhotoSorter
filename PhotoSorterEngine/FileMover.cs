@@ -11,6 +11,8 @@
 
         public FileMoveResult Move(FileMoveRequest request)
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(request.DestinationFileName)!);
+
             var alreadyExists = File.Exists(request.DestinationFileName);
             if (!alreadyExists)
             {
@@ -27,7 +29,7 @@
 
             // Find different non existed name
             var newDestinationFileName = GetNonExistFileName(request.DestinationFileName);
-            File.Move(request.SourceFileName, request.DestinationFileName);
+            File.Move(request.SourceFileName, newDestinationFileName);
             return new FileMoveResult(request.SourceFileName, newDestinationFileName, $"Already exists. Renamed: {newDestinationFileName}");
         }
 
