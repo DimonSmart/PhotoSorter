@@ -3,21 +3,20 @@ using System.Text.RegularExpressions;
 
 namespace PhotoSorterEngine
 {
-
-    public class FileSorter : IFileSorter
+    public class FileReorderCalculator : IFileReorderCalculator
     {
         private readonly IRenamer _renamer;
         private readonly IFileCreationDatetimeExtractor _fileCreationDatetimeExtractor;
 
-        public FileSorter(IRenamer renamer, IFileCreationDatetimeExtractor fileCreationDatetimeExtractor)
+        public FileReorderCalculator(IRenamer renamer, IFileCreationDatetimeExtractor fileCreationDatetimeExtractor)
         {
             _renamer = renamer;
             _fileCreationDatetimeExtractor = fileCreationDatetimeExtractor;
         }
 
-        public SortingCalculationDescription CalculateSorting(SourceFiles sourceFiles, SortParameters sortParameters)
+        public FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, SortParameters sortParameters)
         {
-            var operations = new List<FileMoveDescription>();
+            var operations = new List<FileMoveRequest>();
             var errors = new List<FileMoveError>();
             foreach (var file in sourceFiles.files)
             {
@@ -27,7 +26,7 @@ namespace PhotoSorterEngine
 
                     if (IsAlreadyInPlace(file, dateTime.Value, sortParameters.DestinationFolder, sortParameters.NamePattern, true, out var actualLocation))
                     {
-                        operations.Add(new FileMoveDescription(file, actualLocation, true, "On the spot"));
+                        operations.Add(new FileMoveRequest(file, actualLocation, true, "On the spot"));
                         continue;
                     }
 
@@ -35,7 +34,7 @@ namespace PhotoSorterEngine
                     newFileName = RemoveCommentTag(newFileName);
 
                     // Move needed
-                    operations.Add(new FileMoveDescription(file, newFileName, false, string.Empty));
+                    operations.Add(new FileMoveRequest(file, newFileName, false, string.Empty));
                 }
                 else
                 {
@@ -43,7 +42,7 @@ namespace PhotoSorterEngine
                 }
             }
 
-            return new SortingCalculationDescription(operations, errors);
+            return new FileReorderCalculationDescription(operations, errors);
         }
 
         private static string RemoveCommentTag(string path)
