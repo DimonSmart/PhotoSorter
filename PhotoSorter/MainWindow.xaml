@@ -3,13 +3,51 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PhotoSorter"
+        xmlns:local="clr-namespace:PhotoSorter" xmlns:localViews="clr-namespace:PhotoSorter.Views"
         mc:Ignorable="d"
         Title="Files sorter" Height="450" Width="800">
+    <Window.DataContext>
+        <localViews:MainViewModel/>
+    </Window.DataContext>
     <Grid>
-        <TextBox x:Name="SourceFolder" HorizontalAlignment="Left" Margin="40,44,0,0" TextWrapping="Wrap" Text="Source folder" VerticalAlignment="Top" Width="200"/>
-        <TextBox x:Name="DestinationFolder" HorizontalAlignment="Left" Margin="40,88,0,0" TextWrapping="Wrap" Text="Destination folder" VerticalAlignment="Top" Width="200"/>
-        <Button Content="Preview" HorizontalAlignment="Left" Height="62" Margin="254,44,0,0" VerticalAlignment="Top" Width="54" Click="Button_Click"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="120"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="70"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Source folder:" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" FontWeight="Bold"  />
+                        <TextBox x:Name="SourceFolder" Grid.Row="1" Margin="3,3,30,3" TextWrapping="Wrap" Text="{Binding Path=SourceFolderText}"/>
+                        <Button Grid.Row="1" HorizontalAlignment="Right" Width="30">
+                            <Image Source="Images/folder.png"/>
+                        </Button>
+                        <Label Content="Destination folder:" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontWeight="Bold" FontSize="14" />
+                        <TextBox x:Name="DestinationFolder" Grid.Row="3" Margin="3,3,30,3" TextWrapping="Wrap" Text="{Binding Path=DestinationFolderText}"/>
+                        <Button Grid.Row="3" HorizontalAlignment="Right" Width="30">
+                            <Image Source="Images/folder.png"/>
+                        </Button>
+                    </Grid>
+                    <Button Content="Preview" Grid.Column="1" Height="62" Width="54" Click="Button_Click"/>
+                </Grid>
+            </Grid>
+        </Grid>
+
 
     </Grid>
 </Window>
