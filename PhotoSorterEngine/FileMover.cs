@@ -1,4 +1,6 @@
-﻿namespace PhotoSorterEngine
+﻿using DimonSmart.FileByContentComparer;
+
+namespace PhotoSorterEngine
 {
     public class FileMover : IFileMover
     {

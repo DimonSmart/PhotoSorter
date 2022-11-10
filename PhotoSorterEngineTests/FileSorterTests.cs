@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using DimonSmart.FileByContentComparer;
+using FluentAssertions;
 using PhotoSorterEngine;
 using Xunit.Abstractions;
 using static PhotoSorterEngine.MediaTypeExtensions;
