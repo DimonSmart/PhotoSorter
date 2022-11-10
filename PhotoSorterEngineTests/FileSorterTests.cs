@@ -26,7 +26,7 @@ namespace PhotoSorterEngineTests
                     @"F:\Videos",
                     @"%YYYY%\%Comment%%YYYY%-%MM%-%DD%%Comment%",
                     UseFileCreationDateIfNoExif: false));
-            
+
             File.WriteAllLines(@"C:\temp\1.txt", result.Operations.Where(r => !r.AlreadyInPlace).Select(s => s.SourceFileName + " " + s.DestinationFileName));
             File.WriteAllLines(@"C:\temp\2.txt", result.Errors.Select(s => s.OriginalFileName + " " + s.Error));
 

@@ -2,6 +2,7 @@
 {
     public interface IFileReorderCalculator
     {
-        FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, SortParameters sortParameters);
+        record ProgressReport(int Total, int Current, int Ok, int Errors, string CurrentFile);
+        FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, SortParameters sortParameters, IProgress<ProgressReport>? progressReport = null);
     }
 }
