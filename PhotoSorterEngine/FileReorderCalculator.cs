@@ -24,7 +24,7 @@ namespace PhotoSorterEngine
                 progressReport?.Report(
                     new IFileReorderCalculator.ProgressReport(
                         Total: sourceFiles.files.Count,
-                        Current: currentFileNumber,
+                        Current: currentFileNumber++,
                         Ok: fileMoveRequests.Count,
                         Errors: fileMoveRequestsWithErrors.Count,
                         CurrentFile: file));
