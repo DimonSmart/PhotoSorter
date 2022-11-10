@@ -24,7 +24,7 @@ namespace PhotoSorterEngineTests
             File.WriteAllLines(@"C:\temp\1.txt", result.Operations.Where(r => !r.AlreadyInPlace).Select(s => s.SourceFileName + " " + s.DestinationFileName));
             File.WriteAllLines(@"C:\temp\2.txt", result.Errors.Select(s => s.OriginalFileName + " " + s.Error));
 
-            var fileMover = new FileMover(new FileComparer());
+            var fileMover = new FileMover(new FileByContentComparer());
             var moveResults = new List<FileMoveResult>();
             foreach (var item in result.Operations)
             {

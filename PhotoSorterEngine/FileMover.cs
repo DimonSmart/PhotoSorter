@@ -2,9 +2,9 @@
 {
     public class FileMover : IFileMover
     {
-        private readonly IFileComparer _fileComparer;
+        private readonly IFileByContentComparer _fileComparer;
 
-        public FileMover(IFileComparer fileComparer)
+        public FileMover(IFileByContentComparer fileComparer)
         {
             _fileComparer = fileComparer;
         }
