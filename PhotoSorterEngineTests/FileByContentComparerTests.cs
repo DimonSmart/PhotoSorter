@@ -22,7 +22,9 @@ namespace PhotoSorterEngineTests
         public void FileByContentComparerTest(string content1, string content2, bool expectedResul)
         {
             var comparer = new FileByContentComparer(new FileByContentComparer.FileByContentComparerOptions(4));
-            var result = comparer.Compare(GetStreamFromString(content1), GetStreamFromString(content2));
+            using var stream1 = GetStreamFromString(content1);
+            using var stream2 = GetStreamFromString(content2);
+            var result = comparer.Compare(stream1, stream2);
             result.Should().Be(expectedResul);
         }
 
