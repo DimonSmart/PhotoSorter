@@ -6,7 +6,6 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.QuickTime;
 using ResultMonad;
-using System;
 
 namespace PhotoSorterEngine
 {
@@ -62,10 +61,12 @@ namespace PhotoSorterEngine
         {
             try
             {
-                var fileinfo = MediaFile.Open(fileName);
-                if (fileinfo.Info.Metadata.Metadata.TryGetValue("creation_time", out var creationTimeAsString) && DateTime.TryParse(creationTimeAsString, out var creationTime))
+                using (var fileinfo = MediaFile.Open(fileName))
                 {
-                    return Result.Ok<DateTime, Exception>(creationTime);
+                    if (fileinfo.Info.Metadata.Metadata.TryGetValue("creation_time", out var creationTimeAsString) && DateTime.TryParse(creationTimeAsString, out var creationTime))
+                    {
+                        return Result.Ok<DateTime, Exception>(creationTime);
+                    }
                 }
             }
             catch (Exception)
