@@ -14,19 +14,27 @@ namespace PhotoSorterEngine
             _fileCreationDatetimeExtractor = fileCreationDatetimeExtractor;
         }
 
-        public FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, SortParameters sortParameters)
+        public FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, SortParameters sortParameters, IProgress<IFileReorderCalculator.ProgressReport>? progressReport = null)
         {
-            var operations = new List<FileMoveRequest>();
-            var errors = new List<FileMoveError>();
+            var fileMoveRequests = new List<FileMoveRequest>();
+            var fileMoveRequestsWithErrors = new List<FileMoveError>();
+            var currentFileNumber = 1;
             foreach (var file in sourceFiles.files)
             {
+                progressReport?.Report(
+                    new IFileReorderCalculator.ProgressReport(
+                        Total: sourceFiles.files.Count,
+                        Current: currentFileNumber,
+                        Ok: fileMoveRequests.Count,
+                        Errors: fileMoveRequestsWithErrors.Count,
+                        CurrentFile: file));
                 var dateTime = _fileCreationDatetimeExtractor.Extract(file, sortParameters.UseFileCreationDateIfNoExif);
                 if (dateTime.IsSuccess)
                 {
 
                     if (IsAlreadyInPlace(file, dateTime.Value, sortParameters.DestinationFolder, sortParameters.NamePattern, true, out var actualLocation))
                     {
-                        operations.Add(new FileMoveRequest(file, actualLocation, true, "On the spot"));
+                        fileMoveRequests.Add(new FileMoveRequest(file, actualLocation, true, "On the spot"));
                         continue;
                     }
 
@@ -34,15 +42,15 @@ namespace PhotoSorterEngine
                     newFileName = RemoveCommentTag(newFileName);
 
                     // Move needed
-                    operations.Add(new FileMoveRequest(file, newFileName, false, string.Empty));
+                    fileMoveRequests.Add(new FileMoveRequest(file, newFileName, false, string.Empty));
                 }
                 else
                 {
-                    errors.Add(new FileMoveError(file, dateTime.Error.Message));
+                    fileMoveRequestsWithErrors.Add(new FileMoveError(file, dateTime.Error.Message));
                 }
             }
 
-            return new FileReorderCalculationDescription(operations, errors);
+            return new FileReorderCalculationDescription(fileMoveRequests, fileMoveRequestsWithErrors);
         }
 
         private static string RemoveCommentTag(string path)
@@ -80,6 +88,5 @@ namespace PhotoSorterEngine
             actualLocation = newFileName;
             return match.Success;
         }
-
     }
 }
