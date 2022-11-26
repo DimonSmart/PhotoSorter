@@ -6,6 +6,7 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.QuickTime;
 using ResultMonad;
+using System.IO.Abstractions;
 
 namespace PhotoSorterEngine
 {
@@ -15,7 +16,13 @@ namespace PhotoSorterEngine
         {
             FFmpegLoader.FFmpegPath = @"./FFmpeg";
         }
+        private IFileSystem _fileSystem { get; }
 
+
+        public FileCreationDatetimeExtractor(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
 
         private static List<(string dictionary, string tag, int id)> dateTimeTags = new()
         {
@@ -25,6 +32,7 @@ namespace PhotoSorterEngine
                 new ("IPTC", "Date Created", IptcDirectory.TagDateCreated),
                 new ("AVI", "Date/Time Original", AviDirectory.TagDateTimeOriginal)};
 
+    
         public Result<DateTime, Exception> Extract(string fileName, bool useFileCreationDateIfNoExif)
         {
             var extension = Path.GetExtension(fileName);
@@ -36,7 +44,7 @@ namespace PhotoSorterEngine
             return ExtractPhotoCreationDateTime(fileName, useFileCreationDateIfNoExif);
         }
 
-        private static Result<DateTime, Exception> ExtractPhotoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
+        private Result<DateTime, Exception> ExtractPhotoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
         {
             try
             {
@@ -57,7 +65,7 @@ namespace PhotoSorterEngine
             return ExtractCreationDateFallback(fileName, useFileCreationDateIfNoExif);
         }
 
-        private static Result<DateTime, Exception> ExtractVideoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
+        private Result<DateTime, Exception> ExtractVideoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
         {
             try
             {
@@ -76,7 +84,7 @@ namespace PhotoSorterEngine
             return ExtractCreationDateFallback(fileName, useFileCreationDateIfNoExif);
         }
 
-        private static Result<DateTime, Exception> ExtractCreationDateFallback(string fileName, bool useFileCreationDateIfNoExif)
+        private Result<DateTime, Exception> ExtractCreationDateFallback(string fileName, bool useFileCreationDateIfNoExif)
         {
             if (!useFileCreationDateIfNoExif)
             {
@@ -85,11 +93,11 @@ namespace PhotoSorterEngine
             return ExtractFileCreationDate(fileName);
         }
 
-        private static Result<DateTime, Exception> ExtractFileCreationDate(string fileName)
+        private Result<DateTime, Exception> ExtractFileCreationDate(string fileName)
         {
             try
             {
-                return Result.Ok<DateTime, Exception>(File.GetCreationTime(fileName));
+                return Result.Ok<DateTime, Exception>(_fileSystem.File.GetCreationTime(fileName));
 
             }
             catch (Exception getFileCreationTimeException)

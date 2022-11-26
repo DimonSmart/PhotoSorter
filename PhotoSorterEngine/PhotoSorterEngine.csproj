@@ -12,6 +12,7 @@
     <PackageReference Include="Functional.Maybe" Version="2.0.20" />
     <PackageReference Include="MetadataExtractor" Version="2.7.2" />
     <PackageReference Include="ResultMonad" Version="1.0.1" />
+    <PackageReference Include="System.IO.Abstractions" Version="17.2.26" />
   </ItemGroup>
 
   <ItemGroup>

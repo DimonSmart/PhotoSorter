@@ -10,9 +10,19 @@
             All = Images | Video
         }
 
-        public static readonly ICollection<string> Images = new List<string> { ".jpg", ".jpeg", ".png", ".heic" };
-        public static readonly ICollection<string> Video = new List<string> { ".avi", ".mp4" };
-        public static readonly ICollection<string> All = new List<string> { ".jpg", ".jpeg", ".png", ".heic", ".avi", ".mp4" };
+        public const string Jpg = ".jpg";
+        public const string Jpeg = ".jpeg";
+        public const string Png = ".png";
+        public const string Heic = ".heic";
+        public const string Dng = ".dng";
+
+        public const string Avi = ".avi";
+        public const string Mp4 = ".mp4";
+        public const string Insp = ".insp";
+
+        public static readonly ICollection<string> Images = new List<string> { Jpg, Jpeg, Png, Heic, Dng };
+        public static readonly ICollection<string> Video = new List<string> { Avi, Mp4, Insp };
+        public static readonly ICollection<string> All = new List<string> { Jpg, Jpeg, Png, Heic, Dng, Avi, Mp4, Insp };
 
         public static ICollection<string> GetFileExtensions(MediaType mediaType)
         {

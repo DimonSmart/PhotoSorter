@@ -1,4 +1,5 @@
 ﻿namespace PhotoSorterEngine
 {
-    public record FileReorderCalculationDescription(ICollection<FileMoveRequest> Operations, ICollection<FileMoveError> Errors);
+    public record FileReorderCalculationDescription(ICollection<FileMoveRequest> FileMoveRequests,
+                                                    ICollection<FileMoveError> Errors);
 }

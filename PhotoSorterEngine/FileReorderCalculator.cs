@@ -16,16 +16,16 @@ namespace PhotoSorterEngine
 
         public FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, SortParameters sortParameters, IProgress<IFileReorderCalculator.ProgressReport>? progressReport = null)
         {
-            var fileMoveRequests = new List<FileMoveRequest>();
+            var fileMoveCalculationResults = new List<FileMoveRequest>();
             var fileMoveRequestsWithErrors = new List<FileMoveError>();
             var currentFileNumber = 1;
-            foreach (var file in sourceFiles.files)
+            foreach (var file in sourceFiles.Files)
             {
                 progressReport?.Report(
                     new IFileReorderCalculator.ProgressReport(
-                        Total: sourceFiles.files.Count,
+                        Total: sourceFiles.Files.Count,
                         Current: currentFileNumber++,
-                        Ok: fileMoveRequests.Count,
+                        Ok: fileMoveCalculationResults.Count,
                         Errors: fileMoveRequestsWithErrors.Count,
                         CurrentFile: file));
                 var dateTime = _fileCreationDatetimeExtractor.Extract(file, sortParameters.UseFileCreationDateIfNoExif);
@@ -34,7 +34,7 @@ namespace PhotoSorterEngine
 
                     if (IsAlreadyInPlace(file, dateTime.Value, sortParameters.DestinationFolder, sortParameters.NamePattern, true, out var actualLocation))
                     {
-                        fileMoveRequests.Add(new FileMoveRequest(file, actualLocation, true, "On the spot"));
+                        fileMoveCalculationResults.Add(new FileMoveRequest(file, actualLocation, true, "On the spot"));
                         continue;
                     }
 
@@ -42,7 +42,7 @@ namespace PhotoSorterEngine
                     newFileName = RemoveCommentTag(newFileName);
 
                     // Move needed
-                    fileMoveRequests.Add(new FileMoveRequest(file, newFileName, false, string.Empty));
+                    fileMoveCalculationResults.Add(new FileMoveRequest(file, newFileName, false, string.Empty));
                 }
                 else
                 {
@@ -50,7 +50,7 @@ namespace PhotoSorterEngine
                 }
             }
 
-            return new FileReorderCalculationDescription(fileMoveRequests, fileMoveRequestsWithErrors);
+            return new FileReorderCalculationDescription(fileMoveCalculationResults, fileMoveRequestsWithErrors);
         }
 
         private static string RemoveCommentTag(string path)

@@ -1,4 +1,4 @@
 ﻿namespace PhotoSorterEngine
 {
-    public record SourceFiles(string baseFolder, ICollection<string> files);
+    public record SourceFiles(string BaseFolder, ICollection<string> Files);
 }
