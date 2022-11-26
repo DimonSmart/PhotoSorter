@@ -1,4 +1,4 @@
-﻿namespace PhotoSorterEngine
+﻿namespace PhotoSorterEngine.Interfaces
 {
     using static MediaTypeExtensions;
 

@@ -1,5 +1,5 @@
 using FluentAssertions;
-using PhotoSorterEngine;
+using PhotoSorterEngine.Interfaces;
 using System.Globalization;
 using Xunit.Abstractions;
 

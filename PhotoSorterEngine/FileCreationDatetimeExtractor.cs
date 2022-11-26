@@ -5,6 +5,7 @@ using MetadataExtractor.Formats.Avi;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.QuickTime;
+using PhotoSorterEngine.Interfaces;
 using ResultMonad;
 using System.IO.Abstractions;
 

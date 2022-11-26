@@ -1,5 +1,6 @@
 ﻿namespace PhotoSorterEngine
 {
+    using PhotoSorterEngine.Interfaces;
     using static MediaTypeExtensions;
     public class FileEnumerator : IFileEnumerator
     {

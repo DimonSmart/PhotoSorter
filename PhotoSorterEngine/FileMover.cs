@@ -1,4 +1,5 @@
 ﻿using DimonSmart.FileByContentComparer;
+using PhotoSorterEngine.Interfaces;
 using System.IO.Abstractions;
 
 namespace PhotoSorterEngine

@@ -13,7 +13,7 @@ namespace PhotoSorterEngineTests
         {
         }
 
-        [Fact()] //(Skip = "Check file locations before run")]
+        [Fact(Skip = "Check file locations before run")]
         public void FileSorterPositiveTest()
         {
             var fileCreationDatetimeExtractor = new FileCreationDatetimeExtractor(new FileSystem());

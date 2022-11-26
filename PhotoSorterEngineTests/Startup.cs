@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PhotoSorterEngine;
-
+using PhotoSorterEngine.Interfaces;
 
 namespace PhotoSorterEngineTests
 {
@@ -10,6 +10,7 @@ namespace PhotoSorterEngineTests
         {
             services.AddTransient<IFileCreationDatetimeExtractor, FileCreationDatetimeExtractor>();
             services.AddTransient<IRenamer, Renamer>();
+            services.AddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
         }
     }
 }

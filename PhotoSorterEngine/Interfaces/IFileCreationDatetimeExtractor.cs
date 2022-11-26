@@ -1,7 +1,6 @@
-﻿using Functional.Maybe;
-using ResultMonad;
+﻿using ResultMonad;
 
-namespace PhotoSorterEngine
+namespace PhotoSorterEngine.Interfaces
 {
     public interface IFileCreationDatetimeExtractor
     {
