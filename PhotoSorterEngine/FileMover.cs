@@ -60,7 +60,7 @@ namespace PhotoSorterEngine
             {
                 _fileSystem.File.Move(sourceFileName, destinationFileName);
             }
-            
+
             if (!_options.UseCopyInsteadOfMove && _options.ComplimentaryFileExtensionsToDelete != null)
             {
                 foreach (var ext in _options.ComplimentaryFileExtensionsToDelete)

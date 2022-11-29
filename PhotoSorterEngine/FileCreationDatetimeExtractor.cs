@@ -25,48 +25,59 @@ namespace PhotoSorterEngine
             _fileSystem = fileSystem;
         }
 
+        readonly Dictionary<string, List<Func<string, Result<DateTime, Exception>>>> ext2Func =
+            new Dictionary<string, List<Func<string, Result<DateTime, Exception>>>>(StringComparer.InvariantCultureIgnoreCase)
+        {
+                { MediaTypeExtensions.Jpg, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract } },
+                { MediaTypeExtensions.Jpeg, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract } },
+                { MediaTypeExtensions.Png, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract } },
+                { MediaTypeExtensions.Heic, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract } },
+                { MediaTypeExtensions.Dng, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract } },
+
+
+                { MediaTypeExtensions.Avi, new List<Func<string, Result<DateTime, Exception>>> { FFmediaToolkitExtractorExtract } },
+                { MediaTypeExtensions.Mp4, new List<Func<string, Result<DateTime, Exception>>> { FFmediaToolkitExtractorExtract } },
+                { MediaTypeExtensions.Insp, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract, FFmediaToolkitExtractorExtract } },
+        };
+
         private static List<(string dictionary, string tag, int id)> dateTimeTags = new()
         {
                 new ("Exif IFD0", "Date/Time", ExifDirectoryBase.TagDateTime),
                 new ("SubIFD", "Date/Time Original", ExifDirectoryBase.TagDateTimeOriginal),
                 new ("QuickTime Movie Header", "Created", QuickTimeMetadataHeaderDirectory.TagCreationDate),
                 new ("IPTC", "Date Created", IptcDirectory.TagDateCreated),
-                new ("AVI", "Date/Time Original", AviDirectory.TagDateTimeOriginal)};
+                new ("AVI", "Date/Time Original", AviDirectory.TagDateTimeOriginal)
+        };
 
-    
         public Result<DateTime, Exception> Extract(string fileName, bool useFileCreationDateIfNoExif)
         {
             var extension = Path.GetExtension(fileName);
-            if (MediaTypeExtensions.IsVideo(extension))
+            if (ext2Func.TryGetValue(extension, out var extractors))
             {
-                return ExtractVideoCreationDateTime(fileName, useFileCreationDateIfNoExif);
+                foreach (var extractor in extractors)
+                {
+                    var result = extractor(fileName);
+                    if (result.IsSuccess)
+                    {
+                        return result;
+                    }
+                }
             }
 
-            return ExtractPhotoCreationDateTime(fileName, useFileCreationDateIfNoExif);
+            if (useFileCreationDateIfNoExif)
+            {
+                return ExtractFileCreationDate(fileName);
+            }
+
+            return Result.Fail<DateTime, Exception>(new Exception("No way to extract the image taken date"));
         }
 
-        private Result<DateTime, Exception> ExtractPhotoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
+        private static Result<DateTime, Exception> MetadataExtractorExtract(string fileName)
         {
-            try
-            {
-                var result = Extract(ImageMetadataReader.ReadMetadata(fileName));
-                if (result.IsSuccess)
-                {
-                    return result;
-                }
-            }
-            catch (Exception exception)
-            {
-                if (!useFileCreationDateIfNoExif)
-                {
-                    return Result.Fail<DateTime, Exception>(exception);
-                }
-            }
-
-            return ExtractCreationDateFallback(fileName, useFileCreationDateIfNoExif);
+            return Extract(ImageMetadataReader.ReadMetadata(fileName));
         }
 
-        private Result<DateTime, Exception> ExtractVideoCreationDateTime(string fileName, bool useFileCreationDateIfNoExif)
+        private static Result<DateTime, Exception> FFmediaToolkitExtractorExtract(string fileName)
         {
             try
             {
@@ -78,21 +89,14 @@ namespace PhotoSorterEngine
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
+                return Result.Fail<DateTime, Exception>(exception);
             }
 
-            return ExtractCreationDateFallback(fileName, useFileCreationDateIfNoExif);
+            return Result.Fail<DateTime, Exception>(new Exception("FFmediaToolkit extraction failed"));
         }
 
-        private Result<DateTime, Exception> ExtractCreationDateFallback(string fileName, bool useFileCreationDateIfNoExif)
-        {
-            if (!useFileCreationDateIfNoExif)
-            {
-                return Result.Fail<DateTime, Exception>(new Exception("Cant extract creation date"));
-            }
-            return ExtractFileCreationDate(fileName);
-        }
 
         private Result<DateTime, Exception> ExtractFileCreationDate(string fileName)
         {
@@ -125,7 +129,7 @@ namespace PhotoSorterEngine
                 }
             }
 
-            return Result.Fail<DateTime, Exception>(new Exception("Cant extract creation date"));
+            return Result.Fail<DateTime, Exception>(new Exception("MetadataExtractor extraction failed"));
         }
     }
 }

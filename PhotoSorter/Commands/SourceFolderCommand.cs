@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace PhotoSorter.Commands
 {
-    public class SourceFolderCommand: RoutedCommand
+    public class SourceFolderCommand : RoutedCommand
     {
         private MainWindow _mainWindow;
         private MainViewModel _mainWiewModel;

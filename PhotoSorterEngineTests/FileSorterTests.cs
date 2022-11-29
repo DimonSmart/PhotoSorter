@@ -32,9 +32,11 @@ namespace PhotoSorterEngineTests
 
             var fileMover = new FileMover(new FileByContentComparer(), new FileSystem());
             fileMover.SetOptions(
-                new FileMoveOptions {
+                new FileMoveOptions
+                {
                     UseCopyInsteadOfMove = true,
-                    ComplimentaryFileExtensionsToDelete = new List<string> { ".aac" }}); 
+                    ComplimentaryFileExtensionsToDelete = new List<string> { ".aac" }
+                });
 
             var moveResults = new List<FileMoveResult>();
             foreach (var item in result.FileMoveRequests)

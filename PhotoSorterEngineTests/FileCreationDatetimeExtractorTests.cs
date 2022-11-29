@@ -21,6 +21,7 @@ namespace PhotoSorterEngineTests
         [InlineData(@"TestData\jolla.jpg", @"2014-09-21T16:00:56.0000000")]
         [InlineData(@"TestData\Nikon_D70.JPG", @"2008-07-31T10:03:44.0000000")]
         [InlineData(@"TestData\Sony_HDR-HC3.JPG", @"2008-07-31T17:20:21.0000000")]
+        [InlineData(@"TestData\IMG_20220903_144139_00_042.insp", @"2022-09-03T14:41:39.0000000")]
         public void ExtractFileDateOkTest(string sourceFileName, string datetime)
         {
             var expectedDateTime = DateTime.Parse(datetime, null, DateTimeStyles.RoundtripKind);
