@@ -9,11 +9,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSorterEngine", "PhotoS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSorterEngineTests", "PhotoSorterEngineTests\PhotoSorterEngineTests.csproj", "{CA44E759-9737-4B01-9006-267316EE9E3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSorter.UI.Client", "PhotoSorter.UI\Client\PhotoSorter.UI.Client.csproj", "{FFFDA40D-563E-48C6-9451-3462A6640D9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSorter.UI.Client", "PhotoSorter.UI\Client\PhotoSorter.UI.Client.csproj", "{FFFDA40D-563E-48C6-9451-3462A6640D9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSorter.UI.Server", "PhotoSorter.UI\Server\PhotoSorter.UI.Server.csproj", "{6FCBAEE3-7129-4156-B79E-94E611833FA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSorter.UI.Server", "PhotoSorter.UI\Server\PhotoSorter.UI.Server.csproj", "{6FCBAEE3-7129-4156-B79E-94E611833FA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSorter.UI.Shared", "PhotoSorter.UI\Shared\PhotoSorter.UI.Shared.csproj", "{006A2C7F-C6E0-4EFB-84EF-D54E549D4C6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSorter.UI.Shared", "PhotoSorter.UI\Shared\PhotoSorter.UI.Shared.csproj", "{006A2C7F-C6E0-4EFB-84EF-D54E549D4C6E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B583E546-06DE-4934-BAD4-7BFD40BFFCF7}"
+	ProjectSection(SolutionItems) = preProject
+		Readmee.txt = Readmee.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSorter.UI.WinForm", "PhotoSorter.UI.WinForm\PhotoSorter.UI.WinForm.csproj", "{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +52,10 @@ Global
 		{006A2C7F-C6E0-4EFB-84EF-D54E549D4C6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{006A2C7F-C6E0-4EFB-84EF-D54E549D4C6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{006A2C7F-C6E0-4EFB-84EF-D54E549D4C6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

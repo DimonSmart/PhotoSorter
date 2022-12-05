@@ -1,0 +1,42 @@
+﻿@page "/mainpage"
+@inject PhotoSorter.UI.WinForm.Data.MainPageState MainPageState
+
+<h1>Photo sorter</h1>
+
+<RadzenSplitter Orientation="Orientation.Horizontal" style="height: 100%; border: 1px solid rgba(0,0,0,.08);">
+    <RadzenSplitterPane Size="40%" Min="20%" Max="60%">
+        <table style="width: 100%">
+            <tr>
+                <td>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Source folder</RadzenText>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <RadzenTextBox @bind-Value=@sourceValue Style="width: 100%"></RadzenTextBox>
+                </td>
+                <td style="width: 100px">
+                    <RadzenButton Click=@(args => OnClick("source")) style="margin-left: 20px">Select</RadzenButton>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Dest folder</RadzenText>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <RadzenTextBox @bind-Value=@destValue Style ="width: 100%"></RadzenTextBox>
+                </td>
+                <td style="width: 100px">
+                    <RadzenButton Click=@(args => OnClick("dest")) style="margin-left: 20px">Select</RadzenButton>
+                </td>
+            </tr>
+        </table>
+    </RadzenSplitterPane>
+    <RadzenSplitterPane>
+    </RadzenSplitterPane>
+</RadzenSplitter>
+
+
+

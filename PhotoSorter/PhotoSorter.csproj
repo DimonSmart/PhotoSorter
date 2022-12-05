@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\PhotoSorter.UI.WinForm\Pages\RadzenText.razor" Link="RadzenText.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Images\folder.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
