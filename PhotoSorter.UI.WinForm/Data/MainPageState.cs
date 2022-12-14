@@ -14,17 +14,43 @@ namespace PhotoSorter.UI.WinForm.Data
 
         public string SelectFolder()
         {
-            using (var dialog = new FolderBrowserDialog())
+            try
             {
-                DialogResult result = dialog.ShowDialog();
 
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+
+                using (var dialog = new FolderBrowserDialog())
                 {
+                    DialogResult result = dialog.ShowDialog();
 
-                    return dialog.SelectedPath;
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                    {
+
+                        return dialog.SelectedPath;
+                    }
                 }
+                return string.Empty;
+            } 
+            catch(Exception ex) 
+            {
+                return string.Empty;
             }
-            return string.Empty;
+        }
+
+        public string ChsckFoldersExists(string source, string dest)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (!Directory.Exists(source))
+            {
+                sb.Append($" Source folder '{source}' not exists");
+            }
+
+            if (!Directory.Exists(dest))
+            {
+                sb.Append($" Dest folder '{dest}' not exists");
+            }
+
+            return sb.ToString();
         }
     }
 }

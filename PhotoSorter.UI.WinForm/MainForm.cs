@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
 using PhotoSorter.UI.WinForm.Data;
 using PhotoSorter.UI.WinForm.Pages;
+using Radzen;
 using System.Net.NetworkInformation;
 
 namespace PhotoSorter.UI.WinForm
@@ -15,6 +16,7 @@ namespace PhotoSorter.UI.WinForm
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddWindowsFormsBlazorWebView();
             serviceCollection.AddSingleton<MainPageState>(_mainPageState);
+            serviceCollection.AddScoped<DialogService>();
 
             InitializeComponent();
 

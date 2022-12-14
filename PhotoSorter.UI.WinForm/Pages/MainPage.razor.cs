@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Radzen;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,17 @@ namespace PhotoSorter.UI.WinForm.Pages
                 case "dest":
                     destValue = selectedFolder;
                     break;
+            }
+        }
+
+        private void OnPreviewClick()
+        {
+            var result = MainPageState.ChsckFoldersExists(sourceValue, destValue);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                DialogService.Alert(result, "Error", new AlertOptions() { OkButtonText = "Yes" });
+                return;
             }
         }
     }

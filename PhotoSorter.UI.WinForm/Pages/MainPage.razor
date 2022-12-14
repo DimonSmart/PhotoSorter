@@ -1,5 +1,8 @@
 ﻿@page "/mainpage"
 @inject PhotoSorter.UI.WinForm.Data.MainPageState MainPageState
+@inject DialogService DialogService
+
+<RadzenDialog />
 
 <h1>Photo sorter</h1>
 
@@ -32,9 +35,23 @@
                     <RadzenButton Click=@(args => OnClick("dest")) style="margin-left: 20px">Select</RadzenButton>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <RadzenButton Click=@(args => OnPreviewClick())>Показать</RadzenButton>
+                </td>
+                <td></td>
+            </tr>
         </table>
     </RadzenSplitterPane>
     <RadzenSplitterPane>
+        <RadzenSplitter Orientation="Orientation.Vertical">
+            <RadzenSplitterPane Size="50%" Min="10%" Max="90%">
+
+            </RadzenSplitterPane>
+            <RadzenSplitterPane>
+
+            </RadzenSplitterPane>
+        </RadzenSplitter>
     </RadzenSplitterPane>
 </RadzenSplitter>
 
