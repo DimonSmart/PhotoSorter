@@ -1,8 +1,7 @@
-﻿using Radzen;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Components;
+using PhotoSorterEngine;
+using Radzen;
+using Radzen.Blazor;
 
 namespace PhotoSorter.UI.WinForm.Pages
 {
@@ -11,10 +10,18 @@ namespace PhotoSorter.UI.WinForm.Pages
         private string sourceValue = string.Empty;
         private string destValue = string.Empty;
 
+        private IEnumerable<string> _source;
+        private FileReorderCalculationDescription _fileReorder;
         //public MainPage() 
         //{
         //    //MainPageState.Page = this;
         //}
+
+        protected override void OnInitialized()
+        {
+            _source = new List<string>();
+
+        }
 
         private void OnClick(string buttonName)
         {
@@ -42,6 +49,35 @@ namespace PhotoSorter.UI.WinForm.Pages
                 DialogService.Alert(result, "Error", new AlertOptions() { OkButtonText = "Yes" });
                 return;
             }
+
+            _fileReorder = MainPageState.GetSourcePreview(sourceValue, destValue);
+            _source = _fileReorder.FileMoveRequests.Select(r => r.SourceFileName).ToList();
+        }
+
+        void LoadFiles(TreeExpandEventArgs args)
+        {
+            var directory = args.Value as string;
+
+            args.Children.Data = Directory.EnumerateFileSystemEntries(directory);
+            args.Children.Text = GetTextForNode;
+            args.Children.HasChildren = (path) => Directory.Exists((string)path);
+            args.Children.Template = FileOrFolderTemplate;
+        }
+
+        RenderFragment<RadzenTreeItem> FileOrFolderTemplate = (context) => builder =>
+        {
+            string path = context.Value as string;
+            bool isDirectory = Directory.Exists(path);
+
+            builder.OpenComponent<RadzenIcon>(0);
+            builder.AddAttribute(1, nameof(RadzenIcon.Icon), isDirectory ? "folder" : "insert_drive_file");
+            builder.CloseComponent();
+            builder.AddContent(3, context.Text);
+        };
+
+        string GetTextForNode(object data)
+        {
+            return Path.GetFileName((string)data);
         }
     }
 }

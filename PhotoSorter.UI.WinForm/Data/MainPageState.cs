@@ -1,10 +1,13 @@
 ﻿using PhotoSorter.UI.WinForm.Pages;
 using PhotoSorter.Views;
+using PhotoSorterEngine;
 using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PhotoSorterEngine.MediaTypeExtensions;
 
 namespace PhotoSorter.UI.WinForm.Data
 {
@@ -51,6 +54,22 @@ namespace PhotoSorter.UI.WinForm.Data
             }
 
             return sb.ToString();
+        }
+
+        public FileReorderCalculationDescription GetSourcePreview(string source, string dest)
+        {
+            var fileCreationDatetimeExtractor = new FileCreationDatetimeExtractor(new FileSystem());
+            var renamer = new Renamer();
+            var fileSorter = new FileReorderCalculator(renamer, fileCreationDatetimeExtractor);
+            var fileEnumerator = new FileEnumerator();
+            var sourceFiles = fileEnumerator.EnumerateFiles(source, MediaType.All);
+            var result = fileSorter.Calculate(sourceFiles,
+                new SortParameters(
+                    dest,
+                    @"%YYYY%\%Comment%%YYYY%-%MM%-%DD%%Comment%",
+                    UseFileCreationDateIfNoExif: false));
+
+            return result;
         }
     }
 }
