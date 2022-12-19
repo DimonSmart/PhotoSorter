@@ -46,12 +46,16 @@
     <RadzenSplitterPane>
         <RadzenSplitter Orientation="Orientation.Vertical">
             <RadzenSplitterPane Size="50%" Min="10%" Max="90%">
-                <RadzenTree Data=@_source Expand=@LoadFiles Style="width: 100%; height: 100%">
-                    <RadzenTreeLevel Text=@GetTextForNode Template=@FileOrFolderTemplate />
+                <RadzenTree Data=@_source Expand=@LoadFiles  Style="width: 100%; height: 100%">
+                    <RadzenTreeLevel Text=@GetTextForNode HasChildren=@HasChildren Template=@FileOrFolderTemplate />
                 </RadzenTree>
             </RadzenSplitterPane>
             <RadzenSplitterPane>
-
+                <RadzenSplitterPane Size="50%" Min="10%" Max="90%">
+                    <RadzenTree Data=@_dest Expand=@LoadFiles Style="width: 100%; height: 100%">
+                        <RadzenTreeLevel Text=@GetTextForNode HasChildren=@HasChildren Template=@FileOrFolderTemplate />
+                    </RadzenTree>
+                </RadzenSplitterPane>
             </RadzenSplitterPane>
         </RadzenSplitter>
     </RadzenSplitterPane>

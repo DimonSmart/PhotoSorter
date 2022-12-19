@@ -11,6 +11,7 @@ namespace PhotoSorter.UI.WinForm.Pages
         private string destValue = string.Empty;
 
         private IEnumerable<string> _source;
+        private IEnumerable<string> _dest;
         private FileReorderCalculationDescription _fileReorder;
         //public MainPage() 
         //{
@@ -20,7 +21,7 @@ namespace PhotoSorter.UI.WinForm.Pages
         protected override void OnInitialized()
         {
             _source = new List<string>();
-
+            _dest = new List<string>();
         }
 
         private void OnClick(string buttonName)
@@ -52,6 +53,7 @@ namespace PhotoSorter.UI.WinForm.Pages
 
             _fileReorder = MainPageState.GetSourcePreview(sourceValue, destValue);
             _source = _fileReorder.FileMoveRequests.Select(r => r.SourceFileName).ToList();
+            _dest = _fileReorder.FileMoveRequests.Select(r => r.DestinationFileName).ToList();
         }
 
         void LoadFiles(TreeExpandEventArgs args)
@@ -60,7 +62,10 @@ namespace PhotoSorter.UI.WinForm.Pages
 
             args.Children.Data = Directory.EnumerateFileSystemEntries(directory);
             args.Children.Text = GetTextForNode;
-            args.Children.HasChildren = (path) => Directory.Exists((string)path);
+            args.Children.HasChildren = (path) => {
+                //return Directory.Exists((string)path);
+                return false;
+            };
             args.Children.Template = FileOrFolderTemplate;
         }
 
@@ -74,6 +79,11 @@ namespace PhotoSorter.UI.WinForm.Pages
             builder.CloseComponent();
             builder.AddContent(3, context.Text);
         };
+
+        private bool HasChildren(object path)
+        {
+            return Directory.Exists((string)path);
+        }
 
         string GetTextForNode(object data)
         {
