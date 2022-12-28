@@ -1,12 +1,6 @@
-﻿using PhotoSorter.UI.WinForm.Pages;
-using PhotoSorter.Views;
-using PhotoSorterEngine;
-using System;
-using System.Collections.Generic;
+﻿using PhotoSorterEngine;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using static PhotoSorterEngine.MediaTypeExtensions;
 
 namespace PhotoSorter.UI.WinForm.Data
@@ -70,6 +64,54 @@ namespace PhotoSorter.UI.WinForm.Data
                     UseFileCreationDateIfNoExif: false));
 
             return result;
+        }
+
+        public TreeItem ParseFolders(string rootPath, IEnumerable<string> folders)
+        {
+            var folderData = new TreeItem
+            {
+                Name = rootPath,
+                IsFile = false
+            };
+
+            foreach(string path in folders)
+            {
+                var folderPath = path.Substring(rootPath.Length);
+                ParseFolder(folderData, folderPath, path);
+            }
+
+            return folderData;
+        }
+
+        private void ParseFolder(TreeItem folderData, string path, string fullPath)
+        {
+            int i = path.IndexOf('\\');
+            if (i > -1)
+            {
+                string nextPath = path.Substring(i + 1);
+                if (!nextPath.Contains('\\'))
+                {
+                    folderData.Folders.Add(path, new TreeItem { Name = nextPath, IsFile = true });
+                    return;
+                }
+
+                string folderName = path.Substring(0, i);
+                if (folderData.Folders.TryGetValue(folderName, out var fData))
+                {;
+                    ParseFolder(fData, nextPath, fullPath);
+                    return;
+                }
+
+                var subFolderData = new TreeItem
+                {
+                    Name = folderName,
+                    IsFile = false
+                };
+                folderData.Folders.Add(folderName, subFolderData);
+
+                ParseFolder(subFolderData, nextPath, fullPath);
+            }
+            
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using PhotoSorter.UI.WinForm.Data;
 using PhotoSorterEngine;
 using Radzen;
 using Radzen.Blazor;
@@ -10,9 +11,27 @@ namespace PhotoSorter.UI.WinForm.Pages
         private string sourceValue = string.Empty;
         private string destValue = string.Empty;
 
-        private IEnumerable<string> _source;
-        private IEnumerable<string> _dest;
+        //private IEnumerable<string> _source;
+        //private IEnumerable<string> _dest;
+        private TreeItem _source;
+        private TreeItem _dest;
         private FileReorderCalculationDescription _fileReorder;
+
+        public IEnumerable<object> Source
+        {
+            get
+            {
+                return _source.Folders.Values; 
+            }
+        }
+
+        public IEnumerable<object> Dest
+        {
+            get
+            {
+                return _dest.Folders.Values;
+            }
+        }
         //public MainPage() 
         //{
         //    //MainPageState.Page = this;
@@ -20,8 +39,8 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         protected override void OnInitialized()
         {
-            _source = new List<string>();
-            _dest = new List<string>();
+            _source = new TreeItem();
+            _dest = new TreeItem();
         }
 
         private void OnClick(string buttonName)
@@ -52,27 +71,21 @@ namespace PhotoSorter.UI.WinForm.Pages
             }
 
             _fileReorder = MainPageState.GetSourcePreview(sourceValue, destValue);
-            _source = _fileReorder.FileMoveRequests.Select(r => r.SourceFileName).ToList();
-            _dest = _fileReorder.FileMoveRequests.Select(r => r.DestinationFileName).ToList();
+            _source = MainPageState.ParseFolders(sourceValue, _fileReorder.FileMoveRequests.Select(r => r.SourceFileName).ToList());//_fileReorder.FileMoveRequests.Select(r => r.SourceFileName).ToList();
+            _dest = MainPageState.ParseFolders(destValue, _fileReorder.FileMoveRequests.Select(r => r.DestinationFileName).ToList());//_fileReorder.FileMoveRequests.Select(r => r.DestinationFileName).ToList();
         }
 
         void LoadFiles(TreeExpandEventArgs args)
         {
-            var directory = args.Value as string;
-
-            args.Children.Data = Directory.EnumerateFileSystemEntries(directory);
+            args.Children.Data = ((TreeItem)args.Value).Folders.Values;
             args.Children.Text = GetTextForNode;
-            args.Children.HasChildren = (path) => {
-                //return Directory.Exists((string)path);
-                return false;
-            };
+            args.Children.HasChildren = HasChildren;
             args.Children.Template = FileOrFolderTemplate;
         }
 
         RenderFragment<RadzenTreeItem> FileOrFolderTemplate = (context) => builder =>
         {
-            string path = context.Value as string;
-            bool isDirectory = Directory.Exists(path);
+            bool isDirectory = !((TreeItem)context.Value).IsFile;
 
             builder.OpenComponent<RadzenIcon>(0);
             builder.AddAttribute(1, nameof(RadzenIcon.Icon), isDirectory ? "folder" : "insert_drive_file");
@@ -82,12 +95,12 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         private bool HasChildren(object path)
         {
-            return Directory.Exists((string)path);
+            return ((TreeItem)path).Folders.Count() > 0;
         }
 
         string GetTextForNode(object data)
         {
-            return Path.GetFileName((string)data);
+            return ((TreeItem)data).Name;
         }
     }
 }
