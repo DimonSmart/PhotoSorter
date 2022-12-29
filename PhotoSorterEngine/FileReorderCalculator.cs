@@ -79,14 +79,17 @@ namespace PhotoSorterEngine
                 return false;
         }
 
-        private bool IsAlreadyInPlace(string file, DateTime dateTime, string destinationFolder, string namePattern, out string actualLocation)
+        private bool IsAlreadyInPlace(string fileName, DateTime dateTime, string destinationFolder, string namePattern, out string actualLocation)
         {
-            var newFileName = _renamer.Rename(file, dateTime, destinationFolder, namePattern);
+            actualLocation = fileName;
+            var newFileName = _renamer.Rename(fileName, dateTime, destinationFolder, namePattern);
             var parts = newFileName.Split("%Comment%").Select(s => Regex.Escape(s));
-            var sb = new StringBuilder();
             var pattern = string.Join(".*", parts);
-            var match = Regex.Match(file, pattern);
-            actualLocation = newFileName;
+            var match = Regex.Match(fileName, pattern);
+            if (match.Success)
+            {
+                actualLocation = match.Value;
+            }
             return match.Success;
         }
     }
