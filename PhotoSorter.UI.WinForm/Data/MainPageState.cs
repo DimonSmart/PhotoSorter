@@ -67,17 +67,16 @@ namespace PhotoSorter.UI.WinForm.Data
             return result;
         }
 
-        public FolderTreeItem ParseFolders(string rootPath, IEnumerable<string> files)
+        public static FolderTreeItem ParseFolders(string rootPath, IEnumerable<FileMoveRequest> fileMoveRequests, Func<FileMoveRequest, string> selector)
         {
             var folderData = new FolderTreeItem
             {
                 Name = rootPath
             };
 
-            foreach (string file in files)
+            foreach (var request in fileMoveRequests)
             {
-                // var folderPath = path.Substring(rootPath.Length).TrimStart('\\');
-                ParseFile(folderData, rootPath, file);
+                ParseFile(folderData, rootPath, request, selector);
             }
 
             return folderData;
@@ -85,8 +84,9 @@ namespace PhotoSorter.UI.WinForm.Data
 
         private static readonly char[] PathSeparators = new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
 
-        private static void ParseFile(FolderTreeItem folderTreeItem, string rootPath, string fileName)
+        private static void ParseFile(FolderTreeItem folderTreeItem, string rootPath, FileMoveRequest fileMoveRequest, Func<FileMoveRequest, string> selector)
         {
+            var fileName = selector(fileMoveRequest);
             var fileNameOnly = Path.GetFileName(fileName);
             var directoryFullNameOnly = Path.GetDirectoryName(fileName);
             Debug.Assert(directoryFullNameOnly != null);
@@ -115,7 +115,12 @@ namespace PhotoSorter.UI.WinForm.Data
                     }
                 }
             }
-            folderTreeItem.Folders.Add(fileNameOnly, new FileTreeItem { Name = fileNameOnly });
+            folderTreeItem.Folders.Add(fileNameOnly, new FileTreeItem { Name = fileNameOnly, FileMoveRequest = fileMoveRequest });
+        }
+
+        internal FolderTreeItem ParseFolders(string sourceValue, ICollection<FileMoveRequest> fileMoveRequests, Func<object, object> value)
+        {
+            throw new NotImplementedException();
         }
     }
 }
