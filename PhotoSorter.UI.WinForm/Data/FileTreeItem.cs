@@ -1,7 +1,9 @@
-﻿namespace PhotoSorter.UI.WinForm.Data
+﻿using PhotoSorterEngine;
+
+namespace PhotoSorter.UI.WinForm.Data
 {
     public class FileTreeItem : TreeItemBase
     {
-        // TODO: Add fileMoveRequest info here
+        public required FileMoveRequest FileMoveRequest { get; set; }
     }
 }

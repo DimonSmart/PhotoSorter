@@ -71,8 +71,8 @@ namespace PhotoSorter.UI.WinForm.Pages
             }
 
             _fileReorder = MainPageState.GetSourcePreview(sourceValue, destValue);
-            _source = MainPageState.ParseFolders(sourceValue, _fileReorder.FileMoveRequests.Select(r => r.SourceFileName).ToList());//_fileReorder.FileMoveRequests.Select(r => r.SourceFileName).ToList();
-            _dest = MainPageState.ParseFolders(destValue, _fileReorder.FileMoveRequests.Select(r => r.DestinationFileName).ToList());//_fileReorder.FileMoveRequests.Select(r => r.DestinationFileName).ToList();
+            _source = MainPageState.ParseFolders(sourceValue, _fileReorder.FileMoveRequests, i => i.SourceFileName);
+            _dest = MainPageState.ParseFolders(destValue, _fileReorder.FileMoveRequests, i => i.DestinationFileName);
         }
 
         void LoadFiles(TreeExpandEventArgs args)
