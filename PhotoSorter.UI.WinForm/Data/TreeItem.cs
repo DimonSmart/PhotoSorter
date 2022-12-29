@@ -2,8 +2,16 @@
 {
     public class TreeItem
     {
-        public string Name { get; set; }
-        public bool IsFile { get; set; }
-        public Dictionary<string, TreeItem>  Folders { get; } = new Dictionary<string, TreeItem>();
+        public required string Name { get; set; }
+    //    public required bool IsFile { get; set; }
+   }
+
+    public class FileTreeItem : TreeItem
+    { 
+    }
+
+    public class FolderTreeItem : TreeItem
+    {
+        public Dictionary<string, TreeItem> Folders { get; } = new Dictionary<string, TreeItem>();
     }
 }

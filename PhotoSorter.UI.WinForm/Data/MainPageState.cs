@@ -66,12 +66,11 @@ namespace PhotoSorter.UI.WinForm.Data
             return result;
         }
 
-        public TreeItem ParseFolders(string rootPath, IEnumerable<string> folders)
+        public FolderTreeItem ParseFolders(string rootPath, IEnumerable<string> folders)
         {
-            var folderData = new TreeItem
+            var folderData = new FolderTreeItem
             {
-                Name = rootPath,
-                IsFile = false
+                Name = rootPath
             };
 
             foreach(string path in folders)
@@ -83,7 +82,7 @@ namespace PhotoSorter.UI.WinForm.Data
             return folderData;
         }
 
-        private void ParseFolder(TreeItem folderData, string path, string fullPath)
+        private void ParseFolder(FolderTreeItem folderData, string path, string fullPath)
         {
             int i = path.IndexOf('\\');
             if (i > -1)
@@ -94,19 +93,18 @@ namespace PhotoSorter.UI.WinForm.Data
                 TreeItem? subFolderData = null;
                 if (!folderData.Folders.TryGetValue(folderName, out subFolderData))
                 {;
-                    subFolderData = new TreeItem
+                    subFolderData = new FolderTreeItem
                     {
-                        Name = folderName,
-                        IsFile = false
+                        Name = folderName
                     };
                     folderData.Folders.Add(folderName, subFolderData);
                 }
 
-                ParseFolder(subFolderData, nextPath, fullPath);
+               // ParseFolder(subFolderData, nextPath, fullPath);
                 return;
             }
             if (!string.IsNullOrEmpty(path))
-                folderData.Folders.Add(path, new TreeItem { Name = path, IsFile = true });
+                folderData.Folders.Add(path, new FileTreeItem { Name = path });
         }
     }
 }

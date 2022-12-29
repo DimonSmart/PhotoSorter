@@ -13,8 +13,8 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         //private IEnumerable<string> _source;
         //private IEnumerable<string> _dest;
-        private TreeItem _source;
-        private TreeItem _dest;
+        private FolderTreeItem _source;
+        private FolderTreeItem _dest;
         private FileReorderCalculationDescription _fileReorder;
 
         public IEnumerable<object> Source
@@ -39,8 +39,8 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         protected override void OnInitialized()
         {
-            _source = new TreeItem();
-            _dest = new TreeItem();
+            _source = new FolderTreeItem() { Name = "src_root" };
+            _dest = new FolderTreeItem() { Name = "dst_root"};
         }
 
         private void OnClick(string buttonName)
@@ -77,7 +77,13 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         void LoadFiles(TreeExpandEventArgs args)
         {
-            args.Children.Data = ((TreeItem)args.Value).Folders.Values;
+            IEnumerable<TreeItem> childs = Enumerable.Empty<TreeItem>();
+            if (args.Value is FolderTreeItem fti)
+            {
+                childs = fti.Folders.Values;
+            }
+
+            args.Children.Data = childs;
             args.Children.Text = GetTextForNode;
             args.Children.HasChildren = HasChildren;
             args.Children.Template = FileOrFolderTemplate;
@@ -85,7 +91,7 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         RenderFragment<RadzenTreeItem> FileOrFolderTemplate = (context) => builder =>
         {
-            bool isDirectory = !((TreeItem)context.Value).IsFile;
+            bool isDirectory = context.Value is FolderTreeItem;
 
             builder.OpenComponent<RadzenIcon>(0);
             builder.AddAttribute(1, nameof(RadzenIcon.Icon), isDirectory ? "folder" : "insert_drive_file");
@@ -95,7 +101,7 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         private bool HasChildren(object path)
         {
-            return ((TreeItem)path).Folders.Count() > 0;
+            return path is FolderTreeItem folder && folder.Folders.Any();
         }
 
         string GetTextForNode(object data)
