@@ -26,18 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestData\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PhotoSorterEngine\PhotoSorterEngine.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\Canon_40D.jpg">
+    <None Update="TestData\Canon\Canon_40D.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\canon_hdr_YES.jpg">
+    <None Update="TestData\Canon\canon_hdr_YES.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TestData\G0017133.JPG">
@@ -61,7 +57,7 @@
     <None Update="TestData\Nikon_D70.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Sony_HDR-HC3.jpg">
+    <None Update="TestData\Sony\Sony_HDR-HC3.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
