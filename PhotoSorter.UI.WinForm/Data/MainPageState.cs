@@ -76,7 +76,7 @@ namespace PhotoSorter.UI.WinForm.Data
 
             foreach(string path in folders)
             {
-                var folderPath = path.Substring(rootPath.Length);
+                var folderPath = path.Substring(rootPath.Length).TrimStart('\\');
                 ParseFolder(folderData, folderPath, path);
             }
 
@@ -89,29 +89,24 @@ namespace PhotoSorter.UI.WinForm.Data
             if (i > -1)
             {
                 string nextPath = path.Substring(i + 1);
-                if (!nextPath.Contains('\\'))
-                {
-                    folderData.Folders.Add(path, new TreeItem { Name = nextPath, IsFile = true });
-                    return;
-                }
 
                 string folderName = path.Substring(0, i);
-                if (folderData.Folders.TryGetValue(folderName, out var fData))
+                TreeItem? subFolderData = null;
+                if (!folderData.Folders.TryGetValue(folderName, out subFolderData))
                 {;
-                    ParseFolder(fData, nextPath, fullPath);
-                    return;
+                    subFolderData = new TreeItem
+                    {
+                        Name = folderName,
+                        IsFile = false
+                    };
+                    folderData.Folders.Add(folderName, subFolderData);
                 }
 
-                var subFolderData = new TreeItem
-                {
-                    Name = folderName,
-                    IsFile = false
-                };
-                folderData.Folders.Add(folderName, subFolderData);
-
                 ParseFolder(subFolderData, nextPath, fullPath);
+                return;
             }
-            
+            if (!string.IsNullOrEmpty(path))
+                folderData.Folders.Add(path, new TreeItem { Name = path, IsFile = true });
         }
     }
 }
