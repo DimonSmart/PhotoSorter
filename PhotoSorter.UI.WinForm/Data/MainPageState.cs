@@ -1,4 +1,5 @@
 ﻿using PhotoSorterEngine;
+using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Text;
 using static PhotoSorterEngine.MediaTypeExtensions;
@@ -26,8 +27,8 @@ namespace PhotoSorter.UI.WinForm.Data
                     }
                 }
                 return string.Empty;
-            } 
-            catch(Exception ex) 
+            }
+            catch (Exception ex)
             {
                 return string.Empty;
             }
@@ -66,45 +67,55 @@ namespace PhotoSorter.UI.WinForm.Data
             return result;
         }
 
-        public FolderTreeItem ParseFolders(string rootPath, IEnumerable<string> folders)
+        public FolderTreeItem ParseFolders(string rootPath, IEnumerable<string> files)
         {
             var folderData = new FolderTreeItem
             {
                 Name = rootPath
             };
 
-            foreach(string path in folders)
+            foreach (string file in files)
             {
-                var folderPath = path.Substring(rootPath.Length).TrimStart('\\');
-                ParseFolder(folderData, folderPath, path);
+                // var folderPath = path.Substring(rootPath.Length).TrimStart('\\');
+                ParseFile(folderData, rootPath, file);
             }
 
             return folderData;
         }
 
-        private void ParseFolder(FolderTreeItem folderData, string path, string fullPath)
+        private static readonly char[] PathSeparators = new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
+
+        private static void ParseFile(FolderTreeItem folderTreeItem, string rootPath, string fileName)
         {
-            int i = path.IndexOf('\\');
-            if (i > -1)
+            var fileNameOnly = Path.GetFileName(fileName);
+            var directoryFullNameOnly = Path.GetDirectoryName(fileName);
+            Debug.Assert(directoryFullNameOnly != null);
+            var relativePath = Path.GetRelativePath(rootPath, directoryFullNameOnly);
+            if (relativePath != ".")
             {
-                string nextPath = path.Substring(i + 1);
-
-                string folderName = path.Substring(0, i);
-                TreeItem? subFolderData = null;
-                if (!folderData.Folders.TryGetValue(folderName, out subFolderData))
-                {;
-                    subFolderData = new FolderTreeItem
+                var relativePathSplitted = relativePath.Split(PathSeparators);
+                foreach (var item in relativePathSplitted)
+                {
+                    if (folderTreeItem.Folders.TryGetValue(item, out var subFolderTreeItem))
                     {
-                        Name = folderName
-                    };
-                    folderData.Folders.Add(folderName, subFolderData);
+                        if (subFolderTreeItem is FolderTreeItem fti && fti != null)
+                        {
+                            folderTreeItem = fti;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                    }
+                    else
+                    {
+                        var newFolderItem = new FolderTreeItem { Name = item };
+                        folderTreeItem.Folders.Add(item, newFolderItem);
+                        folderTreeItem = newFolderItem;
+                    }
                 }
-
-               // ParseFolder(subFolderData, nextPath, fullPath);
-                return;
             }
-            if (!string.IsNullOrEmpty(path))
-                folderData.Folders.Add(path, new FileTreeItem { Name = path });
+            folderTreeItem.Folders.Add(fileNameOnly, new FileTreeItem { Name = fileNameOnly });
         }
     }
 }

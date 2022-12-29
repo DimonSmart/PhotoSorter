@@ -21,7 +21,7 @@ namespace PhotoSorter.UI.WinForm.Pages
         {
             get
             {
-                return _source.Folders.Values; 
+                return _source.Folders.Values;
             }
         }
 
@@ -40,7 +40,7 @@ namespace PhotoSorter.UI.WinForm.Pages
         protected override void OnInitialized()
         {
             _source = new FolderTreeItem() { Name = "src_root" };
-            _dest = new FolderTreeItem() { Name = "dst_root"};
+            _dest = new FolderTreeItem() { Name = "dst_root" };
         }
 
         private void OnClick(string buttonName)
@@ -77,7 +77,7 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         void LoadFiles(TreeExpandEventArgs args)
         {
-            IEnumerable<TreeItem> childs = Enumerable.Empty<TreeItem>();
+            IEnumerable<TreeItemBase> childs = Enumerable.Empty<TreeItemBase>();
             if (args.Value is FolderTreeItem fti)
             {
                 childs = fti.Folders.Values;
@@ -106,7 +106,7 @@ namespace PhotoSorter.UI.WinForm.Pages
 
         string GetTextForNode(object data)
         {
-            return ((TreeItem)data).Name;
+            return ((TreeItemBase)data).Name;
         }
     }
 }
