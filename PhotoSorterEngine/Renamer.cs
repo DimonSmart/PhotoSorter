@@ -12,8 +12,6 @@ namespace PhotoSorterEngine
 
         public string Rename(string sourceFileName, DateTime dateTime, string destinationFolder, string pattern)
         {
-            //  var dateTime = _fileCreationDatetimeExtractor.Extract(sourceFileName);
-            // if (!dateTime.HasValue) return Maybe<string>.Nothing;
             CultureInfo enUs = new CultureInfo("en-US");
             var substDict = new Dictionary<string, string>()
             {

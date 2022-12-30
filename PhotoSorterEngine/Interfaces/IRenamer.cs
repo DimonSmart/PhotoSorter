@@ -1,6 +1,4 @@
-﻿using Functional.Maybe;
-
-namespace PhotoSorterEngine.Interfaces
+﻿namespace PhotoSorterEngine.Interfaces
 {
     public interface IRenamer
     {
