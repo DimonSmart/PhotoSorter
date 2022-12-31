@@ -7,6 +7,7 @@ using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.QuickTime;
 using PhotoSorterEngine.Interfaces;
 using ResultMonad;
+using System;
 using System.IO.Abstractions;
 
 namespace PhotoSorterEngine
@@ -74,7 +75,14 @@ namespace PhotoSorterEngine
 
         private static Result<DateTime, Exception> MetadataExtractorExtract(string fileName)
         {
-            return Extract(ImageMetadataReader.ReadMetadata(fileName));
+            try
+            {
+                return Extract(ImageMetadataReader.ReadMetadata(fileName));
+            }
+            catch (MetadataExtractor.ImageProcessingException exception)
+            {
+                return Result.Fail<DateTime, Exception>(exception);
+            }
         }
 
         private static Result<DateTime, Exception> FFmediaToolkitExtractorExtract(string fileName)
