@@ -16,6 +16,12 @@ namespace PhotoSorter.UI.WinForm.Pages
         private FolderTreeItem _source;
         private FolderTreeItem _dest;
         private FileReorderCalculationDescription _fileReorder;
+        private RadzenTree? _destTree;
+
+        private HashSet<TreeItemData> DestTreeItems { get; set; } = new HashSet<TreeItemData>();
+
+
+        object selection;
 
         public IEnumerable<object> Source
         {
@@ -29,8 +35,13 @@ namespace PhotoSorter.UI.WinForm.Pages
         {
             get
             {
-                return _dest.Folders.Values;
+                return _dest.Folders.Values.ToHashSet();
             }
+        }
+
+        public HashSet<TreeItemBase> DestItems
+        {
+            get { return _dest.Folders.Values.ToHashSet(); }
         }
         //public MainPage() 
         //{
@@ -73,6 +84,26 @@ namespace PhotoSorter.UI.WinForm.Pages
             _fileReorder = MainPageState.GetSourcePreview(sourceValue, destValue);
             _source = MainPageState.ParseFolders(sourceValue, _fileReorder.FileMoveRequests, i => i.SourceFileName);
             _dest = MainPageState.ParseFolders(destValue, _fileReorder.FileMoveRequests, i => i.DestinationFileName);
+            DestTreeItems = MainPageState.ParseFoldersData(destValue, _fileReorder.FileMoveRequests, i => i.DestinationFileName).TreeItems;
+        }
+
+        private void OnSelectClick()
+        {
+            //foreach(var d in _destTree.Data)
+            //{
+
+            //}
+
+            if (DestTreeItems.Count() > 0)
+            {
+                var ti = DestTreeItems.First();
+
+                while (ti.HasChild)
+                {
+                    ti.IsExpanded = true;
+                    ti = ti.TreeItems.First();
+                }
+            }
         }
 
         void LoadFiles(TreeExpandEventArgs args)
@@ -107,6 +138,17 @@ namespace PhotoSorter.UI.WinForm.Pages
         string GetTextForNode(object data)
         {
             return ((TreeItemBase)data).Name;
+        }
+
+        bool Expanded(object data)
+        {
+            return (data as TreeItemBase).Expanded;
+            //var treeNode = data as FolderTreeItem;
+            //if (treeNode != null)
+            //{
+            //    return treeNode.Folders.Count() > 0 && treeNode.Expanded;
+            //}
+            //return false;
         }
     }
 }

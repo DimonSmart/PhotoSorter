@@ -1,4 +1,5 @@
-﻿using PhotoSorterEngine;
+﻿using MudBlazor;
+using PhotoSorterEngine;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Text;
@@ -18,9 +19,9 @@ namespace PhotoSorter.UI.WinForm.Data
 
                 using (var dialog = new FolderBrowserDialog())
                 {
-                    DialogResult result = dialog.ShowDialog();
+                    System.Windows.Forms.DialogResult result = dialog.ShowDialog();
 
-                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                    if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
                     {
 
                         return dialog.SelectedPath;
@@ -121,6 +122,46 @@ namespace PhotoSorter.UI.WinForm.Data
         internal FolderTreeItem ParseFolders(string sourceValue, ICollection<FileMoveRequest> fileMoveRequests, Func<object, object> value)
         {
             throw new NotImplementedException();
+        }
+
+        public static TreeItemData ParseFoldersData(string rootPath, IEnumerable<FileMoveRequest> fileMoveRequests, Func<FileMoveRequest, string> selector)
+        {
+            var treeItemData = new TreeItemData( rootPath, "" );
+
+            foreach (var request in fileMoveRequests)
+            {
+                ParseFileData(treeItemData, rootPath, request, selector);
+            }
+
+            return treeItemData;
+        }
+
+        private static void ParseFileData(TreeItemData folderTreeItem, string rootPath, FileMoveRequest fileMoveRequest, Func<FileMoveRequest, string> selector)
+        {
+            var fileName = selector(fileMoveRequest);
+            var fileNameOnly = Path.GetFileName(fileName);
+            var directoryFullNameOnly = Path.GetDirectoryName(fileName);
+            Debug.Assert(directoryFullNameOnly != null);
+            var relativePath = Path.GetRelativePath(rootPath, directoryFullNameOnly);
+            if (relativePath != ".")
+            {
+                var relativePathSplitted = relativePath.Split(PathSeparators);
+                foreach (var item in relativePathSplitted)
+                {
+                    var treeItemData = folderTreeItem.TreeItems.FirstOrDefault(ti => ti.Text == item);
+                    if (treeItemData != null)
+                    {
+                        folderTreeItem = treeItemData;
+                    }
+                    else
+                    {
+                        var newFolderItem = new TreeItemData( item, Icons.Material.Filled.Folder);
+                        folderTreeItem.TreeItems.Add(newFolderItem);
+                        folderTreeItem = newFolderItem;
+                    }
+                }
+            }
+            folderTreeItem.TreeItems.Add(new TreeItemData( fileNameOnly, Icons.Custom.FileFormats.FileDocument));
         }
     }
 }

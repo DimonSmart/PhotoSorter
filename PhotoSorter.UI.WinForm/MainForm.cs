@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 using PhotoSorter.UI.WinForm.Data;
 using PhotoSorter.UI.WinForm.Pages;
 using Radzen;
@@ -17,6 +18,8 @@ namespace PhotoSorter.UI.WinForm
             serviceCollection.AddWindowsFormsBlazorWebView();
             serviceCollection.AddSingleton<MainPageState>(_mainPageState);
             serviceCollection.AddScoped<DialogService>();
+
+            serviceCollection.AddMudServices();
 
             InitializeComponent();
 

@@ -1,12 +1,18 @@
 ﻿@page "/mainpage"
+@using MudBlazor
+@using PhotoSorter.UI.WinForm.Data
 @inject PhotoSorter.UI.WinForm.Data.MainPageState MainPageState
-@inject DialogService DialogService
+@inject Radzen.DialogService DialogService
 
 <RadzenDialog />
 
+<MudThemeProvider/>
+@*<MudDialogProvider/>*@
+@*<MudSnackbarProvider/>*@
+
 <h1>Photo sorter</h1>
 
-<RadzenSplitter Orientation="Orientation.Horizontal" style="height: 100%; border: 1px solid rgba(0,0,0,.08);">
+<RadzenSplitter Orientation="Radzen.Orientation.Horizontal" style="height: 100%; border: 1px solid rgba(0,0,0,.08);">
     <RadzenSplitterPane Size="40%" Min="20%" Max="60%">
         <table style="width: 100%">
             <tr>
@@ -41,10 +47,16 @@
                 </td>
                 <td></td>
             </tr>
+            <tr>
+                <td>
+                    <RadzenButton Click=@(args => OnSelectClick())>Выбрать (ТЕСТ)</RadzenButton>
+                </td>
+                <td></td>
+            </tr>
         </table>
     </RadzenSplitterPane>
     <RadzenSplitterPane>
-        <RadzenSplitter Orientation="Orientation.Vertical">
+        <RadzenSplitter Orientation="Radzen.Orientation.Vertical">
             <RadzenSplitterPane Size="50%" Min="10%" Max="90%">
                 <RadzenTree Data=@Source Expand=@LoadFiles Style="width: 100%; height: 100%">
                     <RadzenTreeLevel Text=@GetTextForNode HasChildren=@HasChildren Template=@FileOrFolderTemplate />
@@ -52,9 +64,21 @@
             </RadzenSplitterPane>
             <RadzenSplitterPane>
                 <RadzenSplitterPane Size="50%" Min="10%" Max="90%">
-                    <RadzenTree Data=@Dest Expand=@LoadFiles Style="width: 100%; height: 100%">
-                        <RadzenTreeLevel Text=@GetTextForNode HasChildren=@HasChildren Template=@FileOrFolderTemplate />
-                    </RadzenTree>
+                    @*<RadzenTree Data=@Dest Expand=@LoadFiles Style="width: 100%; height: 100%" @bind-Value=@selection @ref=@_destTree>
+                        <RadzenTreeLevel Text=@GetTextForNode HasChildren=@HasChildren
+                                         Template=@FileOrFolderTemplate Expanded=@Expanded />
+                    </RadzenTree>*@                   
+                    <MudTreeView Items="@DestTreeItems">
+                        <ItemTemplate>
+                            <MudTreeViewItem @bind-Expanded="@context.IsExpanded" Items="@context.TreeItems">
+                                <Content>
+                                    <MudTreeViewItemToggleButton @bind-Expanded="@context.IsExpanded" Visible="@context.HasChild" />
+                                    <MudIcon Icon="@context.Icon" Class="ml-0 mr-2" Color="@Color.Default" />
+                                    <MudText>@context.Text</MudText>
+                                </Content>
+                            </MudTreeViewItem>
+                        </ItemTemplate>
+                    </MudTreeView>
                 </RadzenSplitterPane>
             </RadzenSplitterPane>
         </RadzenSplitter>
