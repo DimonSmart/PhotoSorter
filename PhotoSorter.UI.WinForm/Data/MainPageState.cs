@@ -75,7 +75,7 @@ namespace PhotoSorter.UI.WinForm.Data
                 Name = rootPath
             };
 
-            foreach (var request in fileMoveRequests)
+            foreach (var request in fileMoveRequests.OrderBy(i => selector(i)))
             {
                 ParseFile(folderData, rootPath, request, selector);
             }
