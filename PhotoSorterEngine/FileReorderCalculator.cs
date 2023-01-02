@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.IO.Enumeration;
+using System.Text.RegularExpressions;
 using PhotoSorterEngine.Interfaces;
 
 namespace PhotoSorterEngine
@@ -50,7 +51,51 @@ namespace PhotoSorterEngine
                 }
             }
 
+            fileMoveCalculationResults = RenameDuplicatesIfExists(fileMoveCalculationResults).ToList();
             return new FileReorderCalculationDescription(fileMoveCalculationResults, fileMoveRequestsWithErrors);
+        }
+
+
+        public static IEnumerable<FileMoveRequest> RenameDuplicatesIfExists(IEnumerable<FileMoveRequest> requests)
+        {
+            var directories = new Dictionary<string, List<string>>();
+            foreach (var request in requests)
+            {
+                var directory = Path.GetDirectoryName(request.DestinationFileName)!;
+                var fileNameOnly = Path.GetFileName(request.DestinationFileName);
+
+                if (directories.TryGetValue(directory, out var fileList))
+                {
+                    var newFileName = GetNonExistFileName(fileNameOnly, fileList.ToHashSet());
+                    fileList.Add(newFileName);
+                    yield return request with { DestinationFileName = Path.Combine(directory, newFileName) };
+                    continue;
+                }
+
+                directories.Add(directory, new List<string> { fileNameOnly });
+                yield return request;
+            }
+        }
+
+        internal static string GetNonExistFileName(string fileNameOnly, HashSet<string> fileList)
+        {
+            if (!fileList.Contains(fileNameOnly))
+            {
+                return fileNameOnly;
+            }
+
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileNameOnly);
+            var extension = Path.GetExtension(fileNameOnly);
+            int counter = 0;
+            while (true)
+            {
+                counter++;
+                var fileNameToTest = Path.ChangeExtension($"{fileNameWithoutExtension}_{counter}", extension);
+                if (!fileList.Contains(fileNameToTest))
+                {
+                    return fileNameToTest;
+                }
+            }
         }
 
         private static string RemoveCommentTag(string path)
