@@ -17,28 +17,27 @@ namespace PhotoSorter.CLI
             .UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!)
             .ConfigureServices((hostContext, services) =>
             {
-                var xxx = hostContext.Configuration.GetSection("PhotoSorter");
-
-                services
-                 .AddOptions<PhotoSorterSettings>()
-                       .Bind(hostContext.Configuration.GetSection("PhotoSorter"));
                 services
                    .AddHostedService<ConsoleHostedService>()
                    .AddSingleton<IFileEnumerator, FileEnumerator>()
                    .AddSingleton<IFileCreationDatetimeExtractor, FileCreationDatetimeExtractor>()
                    .AddSingleton<IRenamer, Renamer>()
                    .AddSingleton<IFileReorderCalculator, FileReorderCalculator>()
-                   .AddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>();
-                  
+                   .AddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>()
+                   .AddOptions<PhotoSorterSettings>()
+                       .Bind(hostContext.Configuration.GetSection("PhotoSorter"));
+
             })
              .ConfigureHostConfiguration(hostConfig =>
              {
                  hostConfig.AddEnvironmentVariables();
                  hostConfig.AddCommandLine(args);
              })
-             .ConfigureLogging(l => {
+             .ConfigureLogging(l =>
+             {
                  l.ClearProviders();
-                 l.AddConsole(); })
+                 l.AddConsole();
+             })
              .RunConsoleAsync();
         }
     }

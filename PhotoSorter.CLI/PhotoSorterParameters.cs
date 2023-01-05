@@ -1,6 +1,6 @@
 ﻿namespace PhotoSorter.CLI
 {
-    public record PhotoSorterParameters (
+    public record PhotoSorterParameters(
         string SourceDirectory,
         string DestinationDirectory,
         string NamePattern,
