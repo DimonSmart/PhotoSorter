@@ -18,14 +18,15 @@ namespace PhotoSorterEngineTests
         {
             var fileCreationDatetimeExtractor = new FileCreationDatetimeExtractor(new FileSystem());
             var renamer = new Renamer();
-            var fileSorter = new FileReorderCalculator(renamer, fileCreationDatetimeExtractor);
-            var fileEnumerator = new FileEnumerator();
-            var sourceFiles = fileEnumerator.EnumerateFiles(@"F:\DCIM", MediaType.All);
-            var result = fileSorter.Calculate(sourceFiles,
-                new SortParameters(
-                    @"D:\Temp",
-                    @"%YYYY%\%Comment%%YYYY%-%MM%-%DD%%Comment%",
-                    UseFileCreationDateIfNoExif: false));
+            var sourceFiles = new FileEnumerator()
+                .EnumerateFiles(@"F:\DCIM", MediaType.All);
+
+            var result = new FileReorderCalculator(renamer, fileCreationDatetimeExtractor)
+                .Calculate(sourceFiles,
+                           new SortParameters(
+                               @"D:\Temp",
+                               @"%YYYY%\%Comment%%YYYY%-%MM%-%DD%%Comment%",
+                               UseFileCreationDateIfNoExif: false));
 
             File.WriteAllLines(@"C:\temp\1.txt", result.FileMoveRequests.Where(r => !r.AlreadyInPlace).Select(s => s.SourceFileName + " " + s.DestinationFileName));
             File.WriteAllLines(@"C:\temp\2.txt", result.Errors.Select(s => s.OriginalFileName + " " + s.Error));
