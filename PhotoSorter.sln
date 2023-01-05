@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSorter.UI.WinForm", "PhotoSorter.UI.WinForm\PhotoSorter.UI.WinForm.csproj", "{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSorter.CLI", "PhotoSorter.CLI\PhotoSorter.CLI.csproj", "{0B0E34C9-E9BD-42E7-B579-2C6767EDBA00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E436BCC0-6DE9-47FF-AA7F-818ECA70F44C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B0E34C9-E9BD-42E7-B579-2C6767EDBA00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B0E34C9-E9BD-42E7-B579-2C6767EDBA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B0E34C9-E9BD-42E7-B579-2C6767EDBA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B0E34C9-E9BD-42E7-B579-2C6767EDBA00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

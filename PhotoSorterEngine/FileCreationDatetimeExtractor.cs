@@ -20,14 +20,13 @@ namespace PhotoSorterEngine
         }
         private IFileSystem _fileSystem { get; }
 
-
         public FileCreationDatetimeExtractor(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
         }
 
-        readonly Dictionary<string, List<Func<string, Result<DateTime, Exception>>>> ext2Func =
-            new Dictionary<string, List<Func<string, Result<DateTime, Exception>>>>(StringComparer.InvariantCultureIgnoreCase)
+        private readonly Dictionary<string, List<Func<string, Result<DateTime, Exception>>>> ext2Func =
+            new(StringComparer.InvariantCultureIgnoreCase)
         {
                 { MediaTypeExtensions.Jpg, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract } },
                 { MediaTypeExtensions.Jpeg, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract } },
@@ -41,7 +40,7 @@ namespace PhotoSorterEngine
                 { MediaTypeExtensions.Insp, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract, FFmediaToolkitExtractorExtract } },
         };
 
-        private static List<(string dictionary, string tag, int id)> dateTimeTags = new()
+        private static readonly List<(string dictionary, string tag, int id)> dateTimeTags = new()
         {
                 new ("Exif IFD0", "Date/Time", ExifDirectoryBase.TagDateTime),
                 new ("SubIFD", "Date/Time Original", ExifDirectoryBase.TagDateTimeOriginal),
@@ -102,7 +101,6 @@ namespace PhotoSorterEngine
 
             return Result.Fail<DateTime, Exception>(new Exception("FFmediaToolkit extraction failed"));
         }
-
 
         private Result<DateTime, Exception> ExtractFileCreationDate(string fileName)
         {
