@@ -32,18 +32,18 @@ namespace PhotoSorterEngineTests
             File.WriteAllLines(@"C:\temp\2.txt", result.Errors.Select(s => s.OriginalFileName + " " + s.Error));
 
             var fileMover = new FileMover(new FileByContentComparer(), new FileSystem());
-            fileMover.SetOptions(
-                new FileMoveOptions
-                {
-                    UseCopyInsteadOfMove = true,
-                    ComplimentaryFileExtensionsToDelete = new List<string> { ".aac" }
-                });
+            var options = new FileMoveParameters
+            {
+                UseCopyInsteadOfMove = true,
+                ComplimentaryFileExtensionsToDelete = new List<string> { ".aac" }
+            };
 
             var moveResults = new List<FileMoveResult>();
             foreach (var item in result.FileMoveRequests)
             {
-                moveResults.Add(fileMover.Move(item));
+                moveResults.Add(fileMover.Move(options, item));
             }
+
             File.WriteAllLines(@"C:\temp\3.txt", moveResults.Select(s => s.Source + " -> " + s.Destination + " = " + s.Description));
         }
     }

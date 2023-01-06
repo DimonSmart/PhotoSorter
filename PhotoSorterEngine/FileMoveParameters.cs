@@ -1,6 +1,6 @@
 ﻿namespace PhotoSorterEngine
 {
-    public record FileMoveOptions(
+    public record FileMoveParameters(
         bool UseCopyInsteadOfMove = false,
         IEnumerable<string>? ComplimentaryFileExtensionsToDelete = null);
 }

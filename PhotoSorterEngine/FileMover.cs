@@ -8,7 +8,6 @@ namespace PhotoSorterEngine
     {
         private readonly IFileByContentComparer _fileComparer;
         private readonly IFileSystem _fileSystem;
-        private FileMoveOptions _options = new();
 
         public FileMover(IFileByContentComparer fileComparer, IFileSystem fileSystem)
         {
@@ -16,12 +15,7 @@ namespace PhotoSorterEngine
             _fileSystem = fileSystem;
         }
 
-        public void SetOptions(FileMoveOptions options)
-        {
-            _options = options;
-        }
-
-        public FileMoveResult Move(FileMoveRequest request)
+        public FileMoveResult Move(FileMoveParameters options, FileMoveRequest request)
         {
             if (request.AlreadyInPlace)
             {
@@ -33,26 +27,26 @@ namespace PhotoSorterEngine
             var alreadyExists = _fileSystem.File.Exists(request.DestinationFileName);
             if (!alreadyExists)
             {
-                Move(request.SourceFileName, request.DestinationFileName);
+                Move(options, request.SourceFileName, request.DestinationFileName);
                 return new FileMoveResult(request.SourceFileName, request.DestinationFileName, "Ok");
             }
 
             // Already existed file exactly the same as original
             if (_fileComparer.Compare(request.SourceFileName, request.DestinationFileName))
             {
-                Delete(request.SourceFileName);
+                Delete(options, request.SourceFileName);
                 return new FileMoveResult(request.SourceFileName, request.DestinationFileName, "The same file already exists");
             }
 
             // Find different non existed name
             var newDestinationFileName = GetNonExistFileName(request.DestinationFileName);
-            Move(request.SourceFileName, newDestinationFileName);
+            Move(options, request.SourceFileName, newDestinationFileName);
             return new FileMoveResult(request.SourceFileName, newDestinationFileName, $"Already exists. Renamed: {newDestinationFileName}");
         }
 
-        private void Move(string sourceFileName, string destinationFileName)
+        private void Move(FileMoveParameters options, string sourceFileName, string destinationFileName)
         {
-            if (_options.UseCopyInsteadOfMove)
+            if (options.UseCopyInsteadOfMove)
             {
                 _fileSystem.File.Copy(sourceFileName, destinationFileName);
             }
@@ -61,18 +55,18 @@ namespace PhotoSorterEngine
                 _fileSystem.File.Move(sourceFileName, destinationFileName);
             }
 
-            if (!_options.UseCopyInsteadOfMove && _options.ComplimentaryFileExtensionsToDelete != null)
+            if (!options.UseCopyInsteadOfMove && options.ComplimentaryFileExtensionsToDelete != null)
             {
-                foreach (var ext in _options.ComplimentaryFileExtensionsToDelete)
+                foreach (var ext in options.ComplimentaryFileExtensionsToDelete)
                 {
-                    Delete(Path.ChangeExtension(sourceFileName, ext));
+                    Delete(options, Path.ChangeExtension(sourceFileName, ext));
                 }
             }
         }
 
-        private void Delete(string fileName)
+        private void Delete(FileMoveParameters options, string fileName)
         {
-            if (_options.UseCopyInsteadOfMove)
+            if (options.UseCopyInsteadOfMove)
             {
                 return;
             }

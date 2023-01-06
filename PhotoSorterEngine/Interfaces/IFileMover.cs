@@ -2,6 +2,6 @@
 {
     public interface IFileMover
     {
-        public FileMoveResult Move(FileMoveRequest request);
+        public FileMoveResult Move(FileMoveParameters options, FileMoveRequest request);
     }
 }
