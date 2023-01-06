@@ -5,6 +5,8 @@ using PhotoSorterEngine;
 using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using static PhotoSorterEngine.MediaTypeExtensions;
+using System.Reflection.Emit;
+using System;
 
 namespace PhotoSorter.CLI
 {
@@ -41,22 +43,7 @@ namespace PhotoSorter.CLI
                 {
                     try
                     {
-                        _logger.LogInformation("PhotoSorter started!");
-                        var parameters = GetPhotoSorterParameters(_photoSorterSettings);
-
-                        var fileEnumerator = new FileEnumerator();
-                        var sourceFiles = fileEnumerator.EnumerateFiles(parameters.SourceDirectory, MediaType.All);
-
-                        _logger.LogInformation("Files to sort:'{FilesCount}'", sourceFiles.Files.Count);
-
-                        var result = _fileReorderCalculator
-                            .Calculate(sourceFiles,
-                                       new SortParameters(
-                                           parameters.DestinationDirectory,
-                                           parameters.NamePattern,
-                                           parameters.UseFileCreationDateIfNoExif));
-                        LogFileReorderCalculationErrors(result);
-
+                        DoSort();
                         _exitCode = 0;
                     }
                     catch (Exception ex)
@@ -72,6 +59,36 @@ namespace PhotoSorter.CLI
             });
 
             return Task.CompletedTask;
+        }
+
+        private void DoSort()
+        {
+            _logger.LogInformation("PhotoSorter started!");
+
+            var parameters = GetPhotoSorterParameters(_photoSorterSettings);
+
+            var sourceFiles = _fileEnumerator.EnumerateFiles(parameters.SourceDirectory, MediaType.All);
+            _logger.LogInformation("Files to sort:'{FilesCount}'", sourceFiles.Files.Count);
+
+            var result = _fileReorderCalculator
+                .Calculate(sourceFiles,
+                           new SortParameters(
+                               parameters.DestinationDirectory,
+                               parameters.NamePattern,
+                               parameters.UseFileCreationDateIfNoExif),
+                               new Progress<IFileReorderCalculator.ProgressReport>(ProgressIndicator));
+            LogFileReorderCalculationErrors(result);
+        }
+
+        private const int ProgressDevider = 50;
+        void ProgressIndicator(IFileReorderCalculator.ProgressReport r)
+        {
+            if (r.Current != 1 && r.Current != r.Total && r.Current % ProgressDevider != 0)
+            {
+                return;
+            }
+
+            _logger.LogInformation("{Current} of {Total}", r.Current, r.Total);
         }
 
         private void LogFileReorderCalculationErrors(FileReorderCalculationDescription result)

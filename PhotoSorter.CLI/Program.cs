@@ -5,6 +5,7 @@ using PhotoSorterEngine;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace PhotoSorter.CLI
 {
@@ -32,11 +33,6 @@ namespace PhotoSorter.CLI
              {
                  hostConfig.AddEnvironmentVariables();
                  hostConfig.AddCommandLine(args);
-             })
-             .ConfigureLogging(l =>
-             {
-                 l.ClearProviders();
-                 l.AddConsole();
              })
              .RunConsoleAsync();
         }
