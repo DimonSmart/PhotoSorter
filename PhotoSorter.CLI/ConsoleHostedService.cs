@@ -2,11 +2,8 @@
 using Microsoft.Extensions.Logging;
 using PhotoSorterEngine.Interfaces;
 using PhotoSorterEngine;
-using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using static PhotoSorterEngine.MediaTypeExtensions;
-using System.Reflection.Emit;
-using System;
 
 namespace PhotoSorter.CLI
 {
@@ -104,34 +101,34 @@ namespace PhotoSorter.CLI
             }
         }
 
-        private PhotoSorterParameters GetPhotoSorterParameters(IOptions<PhotoSorterSettings> photoSorterSettings)
+        internal static PhotoSorterParameters GetPhotoSorterParameters(IOptions<PhotoSorterSettings> photoSorterSettings)
         {
-            var sourceDirectory = _photoSorterSettings.Value.SourceDirectory;
+            var sourceDirectory = photoSorterSettings.Value.SourceDirectory;
             if (string.IsNullOrWhiteSpace(sourceDirectory) || !Directory.Exists(sourceDirectory))
             {
                 throw new Exception("Source folder must be specified and exists!");
             }
 
-            var destinationDirectory = _photoSorterSettings.Value.DestinationDirectory;
+            var destinationDirectory = photoSorterSettings.Value.DestinationDirectory;
             if (string.IsNullOrWhiteSpace(destinationDirectory) || !Directory.Exists(destinationDirectory))
             {
                 throw new Exception("Destination folder (root) must be specified and exists!");
             }
 
-            var namePattern = _photoSorterSettings.Value.NamePattern;
+            var namePattern = photoSorterSettings.Value.NamePattern;
             if (string.IsNullOrEmpty(namePattern))
             {
                 throw new Exception("Name pattern must be specified!");
             }
 
-            var useFileCreationDateIfNoExif = _photoSorterSettings.Value.UseFileCreationDateIfNoExif;
+            var useFileCreationDateIfNoExif = photoSorterSettings.Value.UseFileCreationDateIfNoExif;
 
             return new PhotoSorterParameters(sourceDirectory, destinationDirectory, namePattern, useFileCreationDateIfNoExif);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogDebug($"Exiting with return code: {_exitCode}");
+            _logger.LogDebug("Exiting with return code: {ExitCode}", _exitCode);
 
             // Exit code may be null if the user cancelled via Ctrl+C/SIGTERM
             Environment.ExitCode = _exitCode.GetValueOrDefault(-1);
