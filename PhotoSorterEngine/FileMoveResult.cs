@@ -1,7 +1,10 @@
-﻿namespace PhotoSorterEngine
+﻿using static PhotoSorterEngine.Interfaces.IFileMover;
+
+namespace PhotoSorterEngine
 {
     public record FileMoveResult(
         string Source,
         string Destination,
-        string Description);
+        FileMoveResultCode ResultCode,
+        string? Description = null);
 }

@@ -4,10 +4,6 @@ using PhotoSorterEngine.Interfaces;
 using PhotoSorterEngine;
 using Microsoft.Extensions.Options;
 using static PhotoSorterEngine.MediaTypeExtensions;
-using DimonSmart.FileByContentComparer;
-using ResultMonad;
-using System.IO;
-using XmpCore.Options;
 
 namespace PhotoSorter.CLI
 {
@@ -87,7 +83,7 @@ namespace PhotoSorter.CLI
                                parameters.DestinationDirectory,
                                parameters.NamePattern,
                                parameters.UseFileCreationDateIfNoExif),
-                               new Progress<IFileReorderCalculator.ProgressReport>(ProgressIndicator));
+                               new Progress<IFileReorderCalculator.ProgressReport>(SortProgressIndicator));
             LogFileReorderCalculationErrors(fileReorderCalculationDescription);
 
             if (parameters.Action == PhotoSorterActions.TestOnly)
@@ -101,17 +97,26 @@ namespace PhotoSorter.CLI
                 ComplimentaryFileExtensionsToDelete = parameters.ComplimentaryFileExtensionsToDelete
             };
 
-            var moveResults = new List<FileMoveResult>();
-            foreach (var item in fileReorderCalculationDescription.FileMoveRequests)
-            {
-                moveResults.Add(_fileMover.Move(fileMoveParameters, item));
-            }
+            var moveResults = _fileMover.Move(
+                fileMoveParameters,
+                fileReorderCalculationDescription.FileMoveRequests,
+                new Progress<IFileMover.ProgressReport>(MoveProgressIndicator));
 
-
-
-
+            LogFileMoveErrors(moveResults);
         }
 
+        private void LogFileMoveErrors(IReadOnlyCollection<FileMoveResult> moveResults)
+        {
+            if (moveResults.Count > 0)
+            {
+                _logger.LogInformation("Files reorder completed with:'{ErrorsCount}' errors", moveResults.Count);
+                _logger.LogInformation("Errors samples:'{Errors}'", moveResults.Select(e => $"{e}{Environment.NewLine}").Take(10));
+            }
+            else
+            {
+                _logger.LogInformation("Files reorder completed without errors");
+            }
+        }
 
         private const string HelpText =
 $@" PhotoSorter.CLI.exe
@@ -147,7 +152,8 @@ Main parameters:
         }
 
         private const int ProgressDevider = 50;
-        void ProgressIndicator(IFileReorderCalculator.ProgressReport r)
+
+        void SortProgressIndicator(IFileReorderCalculator.ProgressReport r)
         {
             if (r.Current != 1 && r.Current != r.Total && r.Current % ProgressDevider != 0)
             {
@@ -155,6 +161,16 @@ Main parameters:
             }
 
             _logger.LogInformation("{Current} of {Total}", r.Current, r.Total);
+        }
+
+        void MoveProgressIndicator(IFileMover.ProgressReport r)
+        {
+            if (r.Current != 1 && r.Current != r.Total && r.Current % ProgressDevider != 0)
+            {
+                return;
+            }
+
+            _logger.LogInformation("Move {Current} of {Total}", r.Current, r.Total);
         }
 
         private void LogFileReorderCalculationErrors(FileReorderCalculationDescription result)

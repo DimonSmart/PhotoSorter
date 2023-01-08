@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using DimonSmart.FileByContentComparer;
 
 namespace PhotoSorter.CLI
 {
@@ -24,6 +25,8 @@ namespace PhotoSorter.CLI
                    .AddSingleton<IFileCreationDatetimeExtractor, FileCreationDatetimeExtractor>()
                    .AddSingleton<IRenamer, Renamer>()
                    .AddSingleton<IFileReorderCalculator, FileReorderCalculator>()
+                   .AddSingleton<IFileMover, FileMover>()
+                   .AddSingleton<IFileByContentComparer, FileByContentComparer>()
                    .AddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>()
                    .AddOptions<PhotoSorterSettings>()
                        .Bind(hostContext.Configuration.GetSection("PhotoSorter"));

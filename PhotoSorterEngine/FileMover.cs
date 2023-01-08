@@ -1,6 +1,7 @@
 ﻿using DimonSmart.FileByContentComparer;
 using PhotoSorterEngine.Interfaces;
 using System.IO.Abstractions;
+using static PhotoSorterEngine.Interfaces.IFileMover.FileMoveResultCode;
 
 namespace PhotoSorterEngine
 {
@@ -19,7 +20,7 @@ namespace PhotoSorterEngine
         {
             if (request.AlreadyInPlace)
             {
-                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, "File already in place");
+                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, AlreadyOnPlaceNoMoveRequired);
             }
 
             Directory.CreateDirectory(Path.GetDirectoryName(request.DestinationFileName)!);
@@ -28,20 +29,37 @@ namespace PhotoSorterEngine
             if (!alreadyExists)
             {
                 Move(options, request.SourceFileName, request.DestinationFileName);
-                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, "Ok");
+                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, Ok);
             }
 
             // Already existed file exactly the same as original
             if (_fileComparer.Compare(request.SourceFileName, request.DestinationFileName))
             {
                 Delete(options, request.SourceFileName);
-                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, "The same file already exists");
+                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, AlreadyExist);
             }
 
             // Find different non existed name
             var newDestinationFileName = GetNonExistFileName(request.DestinationFileName);
             Move(options, request.SourceFileName, newDestinationFileName);
-            return new FileMoveResult(request.SourceFileName, newDestinationFileName, $"Already exists. Renamed: {newDestinationFileName}");
+            return new FileMoveResult(request.SourceFileName, newDestinationFileName, DuplicateNameResultRanamed, $"Already exists. Renamed: {newDestinationFileName}");
+        }
+
+        public IReadOnlyCollection<FileMoveResult> Move(FileMoveParameters options, IReadOnlyCollection<FileMoveRequest> requests, IProgress<IFileMover.ProgressReport>? progressReport = null)
+        {
+            var results = new List<FileMoveResult>();
+            var currentFileNumber = 1;
+            foreach (var request in requests)
+            {
+                var moveResult = Move(options, request);
+                results.Add(moveResult);
+                progressReport?.Report(
+                    new IFileMover.ProgressReport(
+                        Total: requests.Count,
+                        Current: currentFileNumber++,
+                        CurrentFile: request.SourceFileName));
+            }
+            return results;
         }
 
         private void Move(FileMoveParameters options, string sourceFileName, string destinationFileName)
@@ -73,7 +91,7 @@ namespace PhotoSorterEngine
             _fileSystem.File.Delete(fileName);
         }
 
-        public string GetNonExistFileName(string fileName)
+        internal string GetNonExistFileName(string fileName)
         {
             int count = 1;
             var fileNameOnly = Path.GetFileNameWithoutExtension(fileName);
