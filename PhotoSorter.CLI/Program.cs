@@ -4,8 +4,6 @@ using PhotoSorterEngine.Interfaces;
 using PhotoSorterEngine;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using DimonSmart.FileByContentComparer;
 
 namespace PhotoSorter.CLI
