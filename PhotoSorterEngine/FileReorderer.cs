@@ -1,26 +1,26 @@
 ﻿using DimonSmart.FileByContentComparer;
 using PhotoSorterEngine.Interfaces;
 using System.IO.Abstractions;
-using static PhotoSorterEngine.Interfaces.IFileMover.FileMoveResultCode;
+using static PhotoSorterEngine.Interfaces.IFileReoderer.FileReorderResultCode;
 
 namespace PhotoSorterEngine
 {
-    public class FileMover : IFileMover
+    public class FileReorderer : IFileReoderer
     {
         private readonly IFileByContentComparer _fileComparer;
         private readonly IFileSystem _fileSystem;
 
-        public FileMover(IFileByContentComparer fileComparer, IFileSystem fileSystem)
+        public FileReorderer(IFileByContentComparer fileComparer, IFileSystem fileSystem)
         {
             _fileComparer = fileComparer;
             _fileSystem = fileSystem;
         }
 
-        public FileMoveResult Move(FileMoveParameters options, FileMoveRequest request)
+        public FileReorderResult Reorder(FileReorderParameters options, FileReorderRequest request)
         {
             if (request.AlreadyInPlace)
             {
-                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, AlreadyOnPlaceNoMoveRequired);
+                return new FileReorderResult(request.SourceFileName, request.DestinationFileName, AlreadyOnPlaceNoMoveRequired);
             }
 
             Directory.CreateDirectory(Path.GetDirectoryName(request.DestinationFileName)!);
@@ -29,32 +29,32 @@ namespace PhotoSorterEngine
             if (!alreadyExists)
             {
                 Move(options, request.SourceFileName, request.DestinationFileName);
-                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, Ok);
+                return new FileReorderResult(request.SourceFileName, request.DestinationFileName, Ok);
             }
 
             // Already existed file exactly the same as original
             if (_fileComparer.Compare(request.SourceFileName, request.DestinationFileName))
             {
                 Delete(options, request.SourceFileName);
-                return new FileMoveResult(request.SourceFileName, request.DestinationFileName, AlreadyExist);
+                return new FileReorderResult(request.SourceFileName, request.DestinationFileName, AlreadyExist);
             }
 
             // Find different non existed name
             var newDestinationFileName = GetNonExistFileName(request.DestinationFileName);
             Move(options, request.SourceFileName, newDestinationFileName);
-            return new FileMoveResult(request.SourceFileName, newDestinationFileName, DuplicateNameResultRanamed, $"Already exists. Renamed: {newDestinationFileName}");
+            return new FileReorderResult(request.SourceFileName, newDestinationFileName, DuplicateNameResultRanamed, $"Already exists. Renamed: {newDestinationFileName}");
         }
 
-        public IReadOnlyCollection<FileMoveResult> Move(FileMoveParameters options, IReadOnlyCollection<FileMoveRequest> requests, IProgress<IFileMover.ProgressReport>? progressReport = null)
+        public IReadOnlyCollection<FileReorderResult> Reorder(FileReorderParameters options, IReadOnlyCollection<FileReorderRequest> requests, IProgress<IFileReoderer.ProgressReport>? progressReport = null)
         {
-            var results = new List<FileMoveResult>();
+            var results = new List<FileReorderResult>();
             var currentFileNumber = 1;
             foreach (var request in requests)
             {
-                var moveResult = Move(options, request);
+                var moveResult = Reorder(options, request);
                 results.Add(moveResult);
                 progressReport?.Report(
-                    new IFileMover.ProgressReport(
+                    new IFileReoderer.ProgressReport(
                         Total: requests.Count,
                         Current: currentFileNumber++,
                         CurrentFile: request.SourceFileName));
@@ -62,7 +62,7 @@ namespace PhotoSorterEngine
             return results;
         }
 
-        private void Move(FileMoveParameters options, string sourceFileName, string destinationFileName)
+        private void Move(FileReorderParameters options, string sourceFileName, string destinationFileName)
         {
             if (options.UseCopyInsteadOfMove)
             {
@@ -82,7 +82,7 @@ namespace PhotoSorterEngine
             }
         }
 
-        private void Delete(FileMoveParameters options, string fileName)
+        private void Delete(FileReorderParameters options, string fileName)
         {
             if (options.UseCopyInsteadOfMove)
             {
@@ -103,6 +103,7 @@ namespace PhotoSorterEngine
             {
                 var tempFileName = Path.ChangeExtension($"{fileNameOnly}_{count}", extension);
                 newFullPath = Path.Combine(path, tempFileName);
+                count++;
             };
             return newFullPath;
         }

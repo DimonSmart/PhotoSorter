@@ -60,7 +60,7 @@ namespace PhotoSorter.UI.WinForm.Data
             var fileEnumerator = new FileEnumerator();
             var sourceFiles = fileEnumerator.EnumerateFiles(source, MediaType.All);
             var result = fileSorter.Calculate(sourceFiles,
-                new SortParameters(
+                new ReorderParameters(
                     dest,
                     @"%YYYY%\%Comment%%YYYY%-%MM%-%DD%%Comment%",
                     UseFileCreationDateIfNoExif: false));
@@ -68,7 +68,7 @@ namespace PhotoSorter.UI.WinForm.Data
             return result;
         }
 
-        public static FolderTreeItem ParseFolders(string rootPath, IEnumerable<FileMoveRequest> fileMoveRequests, Func<FileMoveRequest, string> selector)
+        public static FolderTreeItem ParseFolders(string rootPath, IEnumerable<FileReorderRequest> fileMoveRequests, Func<FileReorderRequest, string> selector)
         {
             var folderData = new FolderTreeItem
             {
@@ -85,7 +85,7 @@ namespace PhotoSorter.UI.WinForm.Data
 
         private static readonly char[] PathSeparators = new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
 
-        private static void ParseFile(FolderTreeItem folderTreeItem, string rootPath, FileMoveRequest fileMoveRequest, Func<FileMoveRequest, string> selector)
+        private static void ParseFile(FolderTreeItem folderTreeItem, string rootPath, FileReorderRequest fileMoveRequest, Func<FileReorderRequest, string> selector)
         {
             var fileName = selector(fileMoveRequest);
             var fileNameOnly = Path.GetFileName(fileName);
@@ -116,17 +116,17 @@ namespace PhotoSorter.UI.WinForm.Data
                     }
                 }
             }
-            folderTreeItem.Folders.Add(fileNameOnly, new FileTreeItem { Name = fileNameOnly, FileMoveRequest = fileMoveRequest });
+            folderTreeItem.Folders.Add(fileNameOnly, new FileTreeItem { Name = fileNameOnly, FileReorderRequest = fileMoveRequest });
         }
 
-        internal FolderTreeItem ParseFolders(string sourceValue, ICollection<FileMoveRequest> fileMoveRequests, Func<object, object> value)
+        internal FolderTreeItem ParseFolders(string sourceValue, ICollection<FileReorderRequest> fileMoveRequests, Func<object, object> value)
         {
             throw new NotImplementedException();
         }
 
-        public static TreeItemData ParseFoldersData(string rootPath, IEnumerable<FileMoveRequest> fileMoveRequests, Func<FileMoveRequest, string> selector)
+        public static TreeItemData ParseFoldersData(string rootPath, IEnumerable<FileReorderRequest> fileMoveRequests, Func<FileReorderRequest, string> selector)
         {
-            var treeItemData = new TreeItemData( rootPath, "" );
+            var treeItemData = new TreeItemData(rootPath, "");
 
             foreach (var request in fileMoveRequests)
             {
@@ -136,7 +136,7 @@ namespace PhotoSorter.UI.WinForm.Data
             return treeItemData;
         }
 
-        private static void ParseFileData(TreeItemData folderTreeItem, string rootPath, FileMoveRequest fileMoveRequest, Func<FileMoveRequest, string> selector)
+        private static void ParseFileData(TreeItemData folderTreeItem, string rootPath, FileReorderRequest fileMoveRequest, Func<FileReorderRequest, string> selector)
         {
             var fileName = selector(fileMoveRequest);
             var fileNameOnly = Path.GetFileName(fileName);
@@ -155,13 +155,13 @@ namespace PhotoSorter.UI.WinForm.Data
                     }
                     else
                     {
-                        var newFolderItem = new TreeItemData( item, Icons.Material.Filled.Folder);
+                        var newFolderItem = new TreeItemData(item, Icons.Material.Filled.Folder);
                         folderTreeItem.TreeItems.Add(newFolderItem);
                         folderTreeItem = newFolderItem;
                     }
                 }
             }
-            folderTreeItem.TreeItems.Add(new TreeItemData( fileNameOnly, Icons.Custom.FileFormats.FileDocument));
+            folderTreeItem.TreeItems.Add(new TreeItemData(fileNameOnly, Icons.Custom.FileFormats.FileDocument));
         }
     }
 }

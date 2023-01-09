@@ -1,6 +1,6 @@
 ﻿namespace PhotoSorterEngine
 {
-    public record FileMoveRequest(
+    public record FileReorderRequest(
         string SourceFileName,
         string DestinationFileName,
         bool AlreadyInPlace,

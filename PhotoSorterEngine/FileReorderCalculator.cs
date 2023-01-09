@@ -15,10 +15,10 @@ namespace PhotoSorterEngine
             _fileCreationDatetimeExtractor = fileCreationDatetimeExtractor;
         }
 
-        public FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, SortParameters sortParameters, IProgress<IFileReorderCalculator.ProgressReport>? progressReport = null)
+        public FileReorderCalculationDescription Calculate(SourceFiles sourceFiles, ReorderParameters sortParameters, IProgress<IFileReorderCalculator.ProgressReport>? progressReport = null)
         {
-            var fileMoveCalculationResults = new List<FileMoveRequest>();
-            var fileMoveRequestsWithErrors = new List<FileMoveError>();
+            var fileMoveCalculationResults = new List<FileReorderRequest>();
+            var fileMoveRequestsWithErrors = new List<FileReorderError>();
             var currentFileNumber = 1;
             foreach (var file in sourceFiles.Files)
             {
@@ -35,7 +35,7 @@ namespace PhotoSorterEngine
 
                     if (IsAlreadyInPlace(file, dateTime.Value, sortParameters.DestinationFolder, sortParameters.NamePattern, true, out var actualLocation))
                     {
-                        fileMoveCalculationResults.Add(new FileMoveRequest(file, actualLocation, true, "On the spot"));
+                        fileMoveCalculationResults.Add(new FileReorderRequest(file, actualLocation, true, "On the spot"));
                         continue;
                     }
 
@@ -43,11 +43,11 @@ namespace PhotoSorterEngine
                     newFileName = RemoveCommentTag(newFileName);
 
                     // Move needed
-                    fileMoveCalculationResults.Add(new FileMoveRequest(file, newFileName, false, string.Empty));
+                    fileMoveCalculationResults.Add(new FileReorderRequest(file, newFileName, false, string.Empty));
                 }
                 else
                 {
-                    fileMoveRequestsWithErrors.Add(new FileMoveError(file, dateTime.Error.Message));
+                    fileMoveRequestsWithErrors.Add(new FileReorderError(file, dateTime.Error.Message));
                 }
             }
 
@@ -56,7 +56,7 @@ namespace PhotoSorterEngine
         }
 
 
-        public static IEnumerable<FileMoveRequest> RenameDuplicatesIfExists(IEnumerable<FileMoveRequest> requests)
+        public static IEnumerable<FileReorderRequest> RenameDuplicatesIfExists(IEnumerable<FileReorderRequest> requests)
         {
             var directories = new Dictionary<string, List<string>>();
             foreach (var request in requests)

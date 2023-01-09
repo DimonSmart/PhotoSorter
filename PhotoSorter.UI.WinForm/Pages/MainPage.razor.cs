@@ -82,9 +82,9 @@ namespace PhotoSorter.UI.WinForm.Pages
             }
 
             _fileReorder = MainPageState.GetSourcePreview(sourceValue, destValue);
-            _source = MainPageState.ParseFolders(sourceValue, _fileReorder.FileMoveRequests, i => i.SourceFileName);
-            _dest = MainPageState.ParseFolders(destValue, _fileReorder.FileMoveRequests, i => i.DestinationFileName);
-            DestTreeItems = MainPageState.ParseFoldersData(destValue, _fileReorder.FileMoveRequests, i => i.DestinationFileName).TreeItems;
+            _source = MainPageState.ParseFolders(sourceValue, _fileReorder.FileReorderRequests, i => i.SourceFileName);
+            _dest = MainPageState.ParseFolders(destValue, _fileReorder.FileReorderRequests, i => i.DestinationFileName);
+            DestTreeItems = MainPageState.ParseFoldersData(destValue, _fileReorder.FileReorderRequests, i => i.DestinationFileName).TreeItems;
         }
 
         private void OnSelectClick()

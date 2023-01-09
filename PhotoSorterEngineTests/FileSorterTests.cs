@@ -23,25 +23,25 @@ namespace PhotoSorterEngineTests
 
             var result = new FileReorderCalculator(renamer, fileCreationDatetimeExtractor)
                 .Calculate(sourceFiles,
-                           new SortParameters(
+                           new ReorderParameters(
                                @"D:\Temp",
                                @"%YYYY%\%Comment%%YYYY%-%MM%-%DD%%Comment%",
                                UseFileCreationDateIfNoExif: false));
 
-            File.WriteAllLines(@"C:\temp\1.txt", result.FileMoveRequests.Where(r => !r.AlreadyInPlace).Select(s => s.SourceFileName + " " + s.DestinationFileName));
+            File.WriteAllLines(@"C:\temp\1.txt", result.FileReorderRequests.Where(r => !r.AlreadyInPlace).Select(s => s.SourceFileName + " " + s.DestinationFileName));
             File.WriteAllLines(@"C:\temp\2.txt", result.Errors.Select(s => s.OriginalFileName + " " + s.Error));
 
-            var fileMover = new FileMover(new FileByContentComparer(), new FileSystem());
-            var options = new FileMoveParameters
+            var fileMover = new FileReorderer(new FileByContentComparer(), new FileSystem());
+            var options = new FileReorderParameters
             {
                 UseCopyInsteadOfMove = true,
                 ComplimentaryFileExtensionsToDelete = new List<string> { ".aac" }
             };
 
-            var moveResults = new List<FileMoveResult>();
-            foreach (var item in result.FileMoveRequests)
+            var moveResults = new List<FileReorderResult>();
+            foreach (var item in result.FileReorderRequests)
             {
-                moveResults.Add(fileMover.Move(options, item));
+                moveResults.Add(fileMover.Reorder(options, item));
             }
 
             File.WriteAllLines(@"C:\temp\3.txt", moveResults.Select(s => s.Source + " -> " + s.Destination + " = " + s.Description));

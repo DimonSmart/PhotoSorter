@@ -23,7 +23,7 @@ namespace PhotoSorter.CLI
                    .AddSingleton<IFileCreationDatetimeExtractor, FileCreationDatetimeExtractor>()
                    .AddSingleton<IRenamer, Renamer>()
                    .AddSingleton<IFileReorderCalculator, FileReorderCalculator>()
-                   .AddSingleton<IFileMover, FileMover>()
+                   .AddSingleton<IFileReoderer, FileReorderer>()
                    .AddSingleton<IFileByContentComparer, FileByContentComparer>()
                    .AddSingleton<System.IO.Abstractions.IFileSystem, System.IO.Abstractions.FileSystem>()
                    .AddOptions<PhotoSorterSettings>()

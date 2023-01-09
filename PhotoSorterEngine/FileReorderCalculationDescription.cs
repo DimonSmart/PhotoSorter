@@ -1,5 +1,5 @@
 ﻿namespace PhotoSorterEngine
 {
-    public record FileReorderCalculationDescription(IReadOnlyCollection<FileMoveRequest> FileMoveRequests,
-                                                    IReadOnlyCollection<FileMoveError> Errors);
+    public record FileReorderCalculationDescription(IReadOnlyCollection<FileReorderRequest> FileReorderRequests,
+                                                    IReadOnlyCollection<FileReorderError> Errors);
 }

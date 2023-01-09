@@ -4,6 +4,9 @@ using PhotoSorterEngine.Interfaces;
 using PhotoSorterEngine;
 using Microsoft.Extensions.Options;
 using static PhotoSorterEngine.MediaTypeExtensions;
+using static PhotoSorterEngine.Interfaces.IFileReoderer.FileReorderResultCode;
+using PhotoSorter.CLI.Extensions;
+using System.Text;
 
 namespace PhotoSorter.CLI
 {
@@ -14,7 +17,7 @@ namespace PhotoSorter.CLI
         private readonly IOptions<PhotoSorterSettings> _photoSorterSettings;
         private readonly IFileEnumerator _fileEnumerator;
         private readonly IFileReorderCalculator _fileReorderCalculator;
-        private readonly IFileMover _fileMover;
+        private readonly IFileReoderer _fileReorderer;
         private int? _exitCode;
 
         public ConsoleHostedService(
@@ -23,14 +26,14 @@ namespace PhotoSorter.CLI
             IOptions<PhotoSorterSettings> photoSorterSettings,
             IFileEnumerator fileEnumerator,
             IFileReorderCalculator fileReorderCalculator,
-            IFileMover fileMover)
+            IFileReoderer fileMover)
         {
             _logger = logger;
             _appLifetime = appLifetime;
             _photoSorterSettings = photoSorterSettings;
             _fileEnumerator = fileEnumerator;
             _fileReorderCalculator = fileReorderCalculator;
-            _fileMover = fileMover;
+            _fileReorderer = fileMover;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -79,7 +82,7 @@ namespace PhotoSorter.CLI
 
             var fileReorderCalculationDescription = _fileReorderCalculator
                 .Calculate(sourceFiles,
-                           new SortParameters(
+                           new ReorderParameters(
                                parameters.DestinationDirectory,
                                parameters.NamePattern,
                                parameters.UseFileCreationDateIfNoExif),
@@ -91,26 +94,42 @@ namespace PhotoSorter.CLI
                 return;
             }
 
-            var fileMoveParameters = new FileMoveParameters
+            var fileReorderParameters = new FileReorderParameters
             {
                 UseCopyInsteadOfMove = parameters.UseCopyInsteadOfMove,
                 ComplimentaryFileExtensionsToDelete = parameters.ComplimentaryFileExtensionsToDelete
             };
 
-            var moveResults = _fileMover.Move(
-                fileMoveParameters,
-                fileReorderCalculationDescription.FileMoveRequests,
-                new Progress<IFileMover.ProgressReport>(MoveProgressIndicator));
+            var moveResults = _fileReorderer.Reorder(
+                fileReorderParameters,
+                fileReorderCalculationDescription.FileReorderRequests,
+                new Progress<IFileReoderer.ProgressReport>(MoveProgressIndicator));
 
-            LogFileMoveErrors(moveResults);
+            LogFileReorderErrors(moveResults);
+
+            LogFileReorderResults(moveResults);
         }
 
-        private void LogFileMoveErrors(IReadOnlyCollection<FileMoveResult> moveResults)
+        private void LogFileReorderResults(IReadOnlyCollection<FileReorderResult> moveResults)
         {
-            if (moveResults.Count > 0)
+            var groupedResults = moveResults.GroupBy(_ => _.ResultCode).Select(_ => (Result: _.Key, Count: _.Count()));
+
+            var sb = new StringBuilder();
+            foreach (var (Result, Count) in groupedResults)
+            {
+                sb.AppendLine($"{Result.GetDescription()}: {Count}");
+            }
+            _logger.LogInformation("{ResultStatistics}", sb.ToString());
+        }
+
+        private void LogFileReorderErrors(IReadOnlyCollection<FileReorderResult> moveResults)
+        {
+            var moveWithErrors = moveResults.Where(_ => _.ResultCode == MoveError);
+
+            if (moveWithErrors.Any())
             {
                 _logger.LogInformation("Files reorder completed with:'{ErrorsCount}' errors", moveResults.Count);
-                _logger.LogInformation("Errors samples:'{Errors}'", moveResults.Select(e => $"{e}{Environment.NewLine}").Take(10));
+                _logger.LogInformation("Errors samples (top 10):'{Errors}'", moveWithErrors.Select(e => $"{e}{Environment.NewLine}").Take(10));
             }
             else
             {
@@ -163,7 +182,7 @@ Main parameters:
             _logger.LogInformation("{Current} of {Total}", r.Current, r.Total);
         }
 
-        void MoveProgressIndicator(IFileMover.ProgressReport r)
+        void MoveProgressIndicator(IFileReoderer.ProgressReport r)
         {
             if (r.Current != 1 && r.Current != r.Total && r.Current % ProgressDevider != 0)
             {

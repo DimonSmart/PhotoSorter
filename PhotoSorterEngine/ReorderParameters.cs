@@ -1,6 +1,6 @@
 ﻿namespace PhotoSorterEngine
 {
-    public record SortParameters(
+    public record ReorderParameters(
         string DestinationFolder,
         string NamePattern,
         bool UseFileCreationDateIfNoExif);
