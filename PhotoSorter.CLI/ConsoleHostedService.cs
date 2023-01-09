@@ -210,13 +210,13 @@ Main parameters:
             var sourceDirectory = photoSorterSettings.Value.SourceDirectory;
             if (string.IsNullOrWhiteSpace(sourceDirectory) || !Directory.Exists(sourceDirectory))
             {
-                throw new Exception("Source folder must be specified and exists!");
+                throw new Exception($"Source folder:'{sourceDirectory}' must be specified and exists!");
             }
 
             var destinationDirectory = photoSorterSettings.Value.DestinationDirectory;
             if (string.IsNullOrWhiteSpace(destinationDirectory) || !Directory.Exists(destinationDirectory))
             {
-                throw new Exception("Destination folder (root) must be specified and exists!");
+                throw new Exception($"Destination folder:'{destinationDirectory}' must be specified and exists!");
             }
 
             var namePattern = photoSorterSettings.Value.NamePattern;
