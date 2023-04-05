@@ -1,8 +1,23 @@
 ﻿@page "/mainpage"
 @using MudBlazor
 @using PhotoSorter.UI.WinForm.Data
+@using PhotoSorter.UI.WinForm.Components
 @inject PhotoSorter.UI.WinForm.Data.MainPageState MainPageState
 @inject Radzen.DialogService DialogService
+
+<style>
+    .selected {
+        background-color: #1E88E5 !important;
+    }
+
+        .selected > td {
+            color: white !important;
+        }
+
+            .selected > td .mud-input {
+                color: white !important;
+            }
+</style>
 
 <RadzenDialog />
 
@@ -13,7 +28,7 @@
 <h1>Photo sorter</h1>
 
 <RadzenSplitter Orientation="Radzen.Orientation.Horizontal" style="height: 100%; border: 1px solid rgba(0,0,0,.08);">
-    <RadzenSplitterPane Size="40%" Min="20%" Max="60%">
+    <RadzenSplitterPane Size="50%" Min="20%" Max="80%">
         <table style="width: 100%">
             <tr>
                 <td>
@@ -28,6 +43,48 @@
                     <RadzenButton Click=@(args => OnClick("source")) style="margin-left: 20px">Select</RadzenButton>
                 </td>
             </tr>
+        </table>
+        <table style="width: 100%">
+            <tr>
+                <td style="width: 100px">
+                    <RadzenButton Click=@(args => OnSourceReturnClick()) style="margin-left: 5px">Return</RadzenButton>
+                </td>
+                <td>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">@SourceFolderPath</RadzenText>
+                </td>
+            </tr>
+        </table>
+        <MudPaper Width="100%" Height="100%">
+            <MudTable Hover="true" Breakpoint="Breakpoint.Sm"
+                      Items="@_source.Folders.Values" 
+                      RowClassFunc="@SourceSelectedRowClassFunc"
+                      OnRowClick="SourceItemRowClickEvent" T="TreeItemBase"
+                      @ref="sourceTable">
+                <HeaderContent>
+                    <MudTh></MudTh>
+                    <MudTh>File name</MudTh> 
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudIcon Icon="@(@context is FolderTreeItem ? Icons.Material.Filled.Folder : Icons.Custom.FileFormats.FileCode)"/>
+                    </MudTd>
+                    <MudTd DataLabel="Наименование">@context.Name</MudTd>
+                </RowTemplate>
+            </MudTable>
+@*            <MudList Clickable="true" @bind-SelectedItem="sourceSelectedItem" @bind-SelectedValue="destSelectedValue" @bind-ref=@SouceList>
+                @foreach(var item in _source.Folders)
+                {
+                    <MudListItem 
+                        Text="@item.Value.Name" 
+                        Icon="@(item.Value is FolderTreeItem ? Icons.Material.Filled.Folder : Icons.Custom.FileFormats.FileCode)" 
+                        Value="@item.Key"
+                        OnClick=@(args => OnSourceItemClick(item.Value)) />
+                }
+            </MudList>*@
+        </MudPaper>
+    </RadzenSplitterPane>
+    <RadzenSplitterPane>
+        <table style="width: 100%">
             <tr>
                 <td>
                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Dest folder</RadzenText>
@@ -35,53 +92,54 @@
             </tr>
             <tr>
                 <td>
-                    <RadzenTextBox @bind-Value=@destValue Style ="width: 100%"></RadzenTextBox>
+                    <RadzenTextBox @bind-Value=@destValue Style="width: 100%"></RadzenTextBox>
                 </td>
                 <td style="width: 100px">
                     <RadzenButton Click=@(args => OnClick("dest")) style="margin-left: 20px">Select</RadzenButton>
                 </td>
-            </tr>
-            <tr>
-                <td>
-                    <RadzenButton Click=@(args => OnPreviewClick())>Показать</RadzenButton>
+                <td style ="width: 100px">
+                    <RadzenButton Click=@(args => OnPreviewClick())>Show</RadzenButton>
                 </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>
-                    <RadzenButton Click=@(args => OnSelectClick())>Выбрать (ТЕСТ)</RadzenButton>
-                </td>
-                <td></td>
             </tr>
         </table>
-    </RadzenSplitterPane>
-    <RadzenSplitterPane>
-        <RadzenSplitter Orientation="Radzen.Orientation.Vertical">
-            <RadzenSplitterPane Size="50%" Min="10%" Max="90%">
-                <RadzenTree Data=@Source Expand=@LoadFiles Style="width: 100%; height: 100%">
-                    <RadzenTreeLevel Text=@GetTextForNode HasChildren=@HasChildren Template=@FileOrFolderTemplate />
-                </RadzenTree>
-            </RadzenSplitterPane>
-            <RadzenSplitterPane>
-                <RadzenSplitterPane Size="50%" Min="10%" Max="90%">
-                    @*<RadzenTree Data=@Dest Expand=@LoadFiles Style="width: 100%; height: 100%" @bind-Value=@selection @ref=@_destTree>
-                        <RadzenTreeLevel Text=@GetTextForNode HasChildren=@HasChildren
-                                         Template=@FileOrFolderTemplate Expanded=@Expanded />
-                    </RadzenTree>*@                   
-                    <MudTreeView Items="@DestTreeItems">
-                        <ItemTemplate>
-                            <MudTreeViewItem @bind-Expanded="@context.IsExpanded" Items="@context.TreeItems">
-                                <Content>
-                                    <MudTreeViewItemToggleButton @bind-Expanded="@context.IsExpanded" Visible="@context.HasChild" />
-                                    <MudIcon Icon="@context.Icon" Class="ml-0 mr-2" Color="@Color.Default" />
-                                    <MudText>@context.Text</MudText>
-                                </Content>
-                            </MudTreeViewItem>
-                        </ItemTemplate>
-                    </MudTreeView>
-                </RadzenSplitterPane>
-            </RadzenSplitterPane>
-        </RadzenSplitter>
+        <table style="width: 100%">
+            <tr>
+                <td style="width: 100px">
+                    <RadzenButton Click=@(args => OnDestReturnClick()) style="margin-left: 5px">Return</RadzenButton>
+                </td>
+                <td>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">@DestFolderPath</RadzenText>
+                </td>
+            </tr>
+        </table>
+        <MudPaper Width="100%">
+            <MyMudTable Hover="true" Breakpoint="Breakpoint.Sm"
+                        Items="@_dest.Folders.Values" 
+                      RowClassFunc="@DestSelectedRowClassFunc"
+                      OnRowClick="DestItemRowClickEvent" T="TreeItemBase"
+                      @ref="destTable">
+                <HeaderContent>
+                    <MudTh></MudTh>
+                    <MudTh>File name</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudIcon Icon="@(@context is FolderTreeItem ? Icons.Material.Filled.Folder : Icons.Custom.FileFormats.FileCode)" />
+                    </MudTd>
+                    <MudTd DataLabel="Наименование">@context.Name</MudTd>
+                </RowTemplate>
+            </MyMudTable>
+@*            <MudList>
+                @foreach (var item in _dest.Folders)
+                {
+                    <MudListItem 
+                        Text="@item.Value.Name"
+                        Icon="@(item.Value is FolderTreeItem ? Icons.Material.Filled.Folder : Icons.Custom.FileFormats.FileCode)"
+                        Value="@item.Key" 
+                        OnClick=@(args => OnDestItemClick(item.Value)) />
+                }
+            </MudList>*@
+        </MudPaper>
     </RadzenSplitterPane>
 </RadzenSplitter>
 

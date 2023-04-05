@@ -72,6 +72,7 @@ namespace PhotoSorter.UI.WinForm.Data
         {
             var folderData = new FolderTreeItem
             {
+                ParentFolder = null,
                 Name = rootPath
             };
 
@@ -110,7 +111,7 @@ namespace PhotoSorter.UI.WinForm.Data
                     }
                     else
                     {
-                        var newFolderItem = new FolderTreeItem { Name = item };
+                        var newFolderItem = new FolderTreeItem { Name = item, ParentFolder = folderTreeItem };
                         folderTreeItem.Folders.Add(item, newFolderItem);
                         folderTreeItem = newFolderItem;
                     }
