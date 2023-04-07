@@ -1,22 +1,21 @@
 ﻿using PhotoSorter.Commands;
 using System.ComponentModel;
-using System.Windows.Input;
 
 namespace PhotoSorter.Views
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private MainWindow _mainWindow;
+        private readonly MainWindow _mainWindow;
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        public static SourceFolderCommand SelectSourceFolderCommand { get; private set; }
-        public static DestinationFolderCommand SelectDestinationFolderCommand { get; private set; }
+        public static SelectSourceFolderCommand SelectSourceFolderCommand { get; private set; }
+        public static SelectDestinationFolderCommand SelectDestinationFolderCommand { get; private set; }
 
         public MainViewModel()
         {
             _mainWindow = (MainWindow)App.Current.MainWindow;
-            SelectSourceFolderCommand = new SourceFolderCommand(_mainWindow, this);
-            SelectDestinationFolderCommand = new DestinationFolderCommand(_mainWindow, this);
+            SelectSourceFolderCommand = new SelectSourceFolderCommand(_mainWindow, this);
+            SelectDestinationFolderCommand = new SelectDestinationFolderCommand(_mainWindow, this);
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -33,7 +32,7 @@ namespace PhotoSorter.Views
                 if (value != _sourceFolderText)
                 {
                     _sourceFolderText = value;
-                    OnPropertyChanged("SourceFolderText");
+                    OnPropertyChanged(nameof(SourceFolderText));
                 }
             }
         }
@@ -47,7 +46,7 @@ namespace PhotoSorter.Views
                 if (value != _destinationFolderText)
                 {
                     _destinationFolderText = value;
-                    OnPropertyChanged("DestinationFolderText");
+                    OnPropertyChanged(nameof(DestinationFolderText));
                 }
             }
         }
