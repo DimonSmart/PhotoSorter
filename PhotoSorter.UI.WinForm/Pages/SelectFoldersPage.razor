@@ -1,0 +1,38 @@
+﻿@inject PhotoSorter.UI.WinForm.Data.MainPageState MainPageState
+@inject Radzen.DialogService DialogService
+
+<table style="width: 100%">
+    <tr>
+        <td>
+            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Source folder</RadzenText>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <RadzenTextBox @bind-Value=@sourceValue Style="width: 100%"></RadzenTextBox>
+        </td>
+        <td style="width: 100px">
+            <RadzenButton Click=@(args => OnClick("source")) style="margin-left: 20px">Select</RadzenButton>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Dest folder</RadzenText>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <RadzenTextBox @bind-Value=destValue Style="width: 100%"></RadzenTextBox>
+        </td>
+        <td style="width: 100px">
+            <RadzenButton Click=@(args => OnClick("dest")) style="margin-left: 20px">Select</RadzenButton>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 100px">
+            <RadzenButton Click="OnPreviewFoldersClick">Show</RadzenButton>
+        </td>
+        <td></td>
+    </tr>
+</table>
+
