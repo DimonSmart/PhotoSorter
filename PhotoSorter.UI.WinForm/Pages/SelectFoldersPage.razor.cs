@@ -39,7 +39,7 @@ namespace PhotoSorter.UI.WinForm.Pages
                 return;
             }
 
-            await OnPreviewClick.InvokeAsync(new FoldersData { Source = sourceValue, Dest = destValue});
+            await OnPreviewClick.InvokeAsync(new FoldersData { Source = sourceValue, Dest = destValue });
         }
     }
 }

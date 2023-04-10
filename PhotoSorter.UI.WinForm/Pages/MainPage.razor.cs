@@ -59,7 +59,8 @@ namespace PhotoSorter.UI.WinForm.Pages
                     _dest = MainPageState.ParseFolders(folderData.Dest, fileReorder.FileReorderRequests, i => i.DestinationFileName);
                     PageState = PageStateEnum.PreviewFolders;
                 });
-            } finally
+            }
+            finally
             {
                 IndicatoVisible = false;
             }
