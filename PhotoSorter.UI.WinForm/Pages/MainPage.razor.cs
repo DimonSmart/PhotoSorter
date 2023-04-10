@@ -53,7 +53,6 @@ namespace PhotoSorter.UI.WinForm.Pages
             {
                 await Task.Run(() =>
                 {
-                    //Task.Delay(5000);
                     var fileReorder = MainPageState.GetSourcePreview(folderData.Source, folderData.Dest);
                     _source = MainPageState.ParseFolders(folderData.Source, fileReorder.FileReorderRequests, i => i.SourceFileName);
                     _dest = MainPageState.ParseFolders(folderData.Dest, fileReorder.FileReorderRequests, i => i.DestinationFileName);
