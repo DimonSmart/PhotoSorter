@@ -38,13 +38,15 @@ namespace PhotoSorterEngine
                 { MediaTypeExtensions.Avi, new List<Func<string, Result<DateTime, Exception>>> { FFmediaToolkitExtractorExtract } },
                 { MediaTypeExtensions.Mp4, new List<Func<string, Result<DateTime, Exception>>> { FFmediaToolkitExtractorExtract } },
                 { MediaTypeExtensions.Insp, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract, FFmediaToolkitExtractorExtract } },
+                { MediaTypeExtensions.Insv, new List<Func<string, Result<DateTime, Exception>>> { MetadataExtractorExtract, FFmediaToolkitExtractorExtract } },
         };
 
         private static readonly List<(string dictionary, string tag, int id)> dateTimeTags = new()
         {
                 new ("Exif IFD0", "Date/Time", ExifDirectoryBase.TagDateTime),
                 new ("SubIFD", "Date/Time Original", ExifDirectoryBase.TagDateTimeOriginal),
-                new ("QuickTime Movie Header", "Created", QuickTimeMetadataHeaderDirectory.TagCreationDate),
+                new ("QuickTime Metadata Header", "Creation Date", QuickTimeMetadataHeaderDirectory.TagCreationDate),
+                new ("QuickTime Movie Header", "Created", QuickTimeMovieHeaderDirectory.TagCreated),
                 new ("IPTC", "Date Created", IptcDirectory.TagDateCreated),
                 new ("AVI", "Date/Time Original", AviDirectory.TagDateTimeOriginal)
         };
@@ -119,17 +121,18 @@ namespace PhotoSorterEngine
         {
             foreach (var dateTimeTag in dateTimeTags)
             {
-                var dictionary = directories.FirstOrDefault(d => d.Name == dateTimeTag.dictionary);
-                if (dictionary == null) continue;
-                try
+                foreach (var dictionary in directories.Where(d => d.Name == dateTimeTag.dictionary))
                 {
-                    if (dictionary.TryGetDateTime(dateTimeTag.id, out var dateTime))
+                    try
                     {
-                        return Result.Ok<DateTime, Exception>(dateTime);
+                        if (dictionary.TryGetDateTime(dateTimeTag.id, out var dateTime))
+                        {
+                            return Result.Ok<DateTime, Exception>(dateTime);
+                        }
                     }
-                }
-                catch (Exception)
-                {
+                    catch (Exception)
+                    {
+                    }
                 }
             }
 

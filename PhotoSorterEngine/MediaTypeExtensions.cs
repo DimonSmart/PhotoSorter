@@ -19,10 +19,11 @@
         public const string Avi = ".avi";
         public const string Mp4 = ".mp4";
         public const string Insp = ".insp";
+        public const string Insv = ".insv";
 
         public static readonly ICollection<string> Images = new List<string> { Jpg, Jpeg, Png, Heic, Dng };
-        public static readonly ICollection<string> Video = new List<string> { Avi, Mp4, Insp };
-        public static readonly ICollection<string> All = new List<string> { Jpg, Jpeg, Png, Heic, Dng, Avi, Mp4, Insp };
+        public static readonly ICollection<string> Video = new List<string> { Avi, Mp4, Insp, Insv };
+        public static readonly ICollection<string> All = new List<string> { Jpg, Jpeg, Png, Heic, Dng, Avi, Mp4, Insp, Insv };
 
         public static ICollection<string> GetFileExtensions(MediaType mediaType)
         {
