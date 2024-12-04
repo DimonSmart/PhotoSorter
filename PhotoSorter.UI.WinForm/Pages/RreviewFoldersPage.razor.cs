@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace PhotoSorter.UI.WinForm.Pages
 {
@@ -19,15 +20,19 @@ namespace PhotoSorter.UI.WinForm.Pages
 
 
         [Parameter]
-        public FolderTreeItem SourceFolderItem { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public FolderTreeItem? SourceFolderItem { get; set; }
 
         [Parameter]
-        public FolderTreeItem DestFolderItem { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public FolderTreeItem? DestFolderItem { get; set; }
 
         [Parameter]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public EventCallback OnReturnClick { get; set; }
 
         [Parameter]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public EventCallback OnExecuteClick { get; set; }
 
         public string SourceFolderPath

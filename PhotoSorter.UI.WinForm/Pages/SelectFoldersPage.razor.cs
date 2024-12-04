@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using PhotoSorter.UI.WinForm.Data;
 using Radzen;
+using System.ComponentModel;
 
 namespace PhotoSorter.UI.WinForm.Pages
 {
@@ -10,6 +11,7 @@ namespace PhotoSorter.UI.WinForm.Pages
         private string destValue = string.Empty;
 
         [Parameter]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public EventCallback<FoldersData> OnPreviewClick { get; set; }
 
         private void OnClick(string buttonName)

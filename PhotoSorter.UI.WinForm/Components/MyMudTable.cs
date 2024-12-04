@@ -1,10 +1,12 @@
 ﻿using MudBlazor;
+using System.ComponentModel;
 
 namespace PhotoSorter.UI.WinForm.Components
 {
     public class MyMudTable<T> : MudTable<T>
     {
-        public T SelectAfterRender { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public T? SelectAfterRender { get; set; }
 
         protected override void OnAfterRender(bool firstRender)
         {
