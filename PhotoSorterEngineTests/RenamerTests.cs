@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using PhotoSorterEngine.Interfaces;
 using System.Globalization;
-using Xunit.Abstractions;
 
 namespace PhotoSorterEngineTests
 {

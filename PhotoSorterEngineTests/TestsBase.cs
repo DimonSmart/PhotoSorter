@@ -1,6 +1,4 @@
-﻿using Xunit.Abstractions;
-
-namespace PhotoSorterEngineTests
+﻿namespace PhotoSorterEngineTests
 {
     public class TestsBase
     {

@@ -2,7 +2,6 @@
 using FluentAssertions;
 using PhotoSorterEngine;
 using System.IO.Abstractions;
-using Xunit.Abstractions;
 using static PhotoSorterEngine.MediaTypeExtensions;
 
 namespace PhotoSorterEngineTests
